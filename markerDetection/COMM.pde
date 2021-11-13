@@ -1,14 +1,14 @@
 import oscP5.*;
 import netP5.*;
 
-
 public class COMM {
   OscP5 oscP5;
   NetAddress myRemoteLocation;
   OscMessage myMessage;
 
-  public COMM(OscP5 oscP5) {
-    this.oscP5 = oscP5;
+  public COMM(int listeningPort, String userIP) {
+    this.oscP5 = new OscP5(this, listeningPort);
+    myRemoteLocation = new NetAddress(userIP, listeningPort);
   }
 
   public void event(OscMessage theOscMessage) {
@@ -24,5 +24,16 @@ public class COMM {
       }
     }
     println("### received pattern: " + theOscMessage.addrPattern());
+  }
+
+  public void send(int i, PVector[] vec) {
+    println("i: " + i + " normalized x/y/z: " + vec[i].x/window_x + " " + vec[i].y/window_y + " " + vec[i].z); 
+        //not normalized, just set to be in <0.0;1.0> screen coords
+    myMessage = new OscMessage("/markersCoord");
+    myMessage.add(i);
+    myMessage.add(vec[i].x/window_x);
+    myMessage.add(vec[i].y/window_y);
+    myMessage.add(vec[i].z);
+    this.oscP5.send(myMessage, myRemoteLocation);
   }
 }
