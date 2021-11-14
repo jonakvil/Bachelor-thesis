@@ -31,4 +31,7 @@ Under the hood the tool is programmed in Java Processing.
 
 ## License
 
+## Liability Disclaimer
+The information, software, products, and services includes in or available through the site may include inaccuracies or typographical errors. Changes are periodically added to the information herein. Vilem Jonak, and collaborators may make improvements and/or changes in the site at any time. Vilem Jonak, and collaborators make no representations about the suitability, reliability, availability, timeliness, and accuracy of the information, software, products, services and related graphics contained on the site for any purpose. To the maximum extent permitted by applicable law, all such information, software, products, services, and related graphics are provided “as is” without warranty or condition of any kind.
+
 
