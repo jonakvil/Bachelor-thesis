@@ -29,9 +29,11 @@ Note that you can also adjust few settings. Click on the "XXXX" tab.
 ## How does it work?
 Under the hood the tool is programmed in Java Processing.
 
-## License
+## MIT License
+Copyright © 2021 Vilem Jonak, Vojtech Leischner
 
-## Liability Disclaimer
-The information, software, products, and services includes in or available through the site may include inaccuracies or typographical errors. Changes are periodically added to the information herein. Vilem Jonak, and collaborators may make improvements and/or changes in the site at any time. Vilem Jonak, and collaborators make no representations about the suitability, reliability, availability, timeliness, and accuracy of the information, software, products, services and related graphics contained on the site for any purpose. To the maximum extent permitted by applicable law, all such information, software, products, services, and related graphics are provided “as is” without warranty or condition of any kind.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
