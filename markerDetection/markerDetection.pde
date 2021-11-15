@@ -86,6 +86,17 @@ void draw()
   }
 }
 
+public void controlEvent(CallbackEvent theEvent) {
+  if (theEvent.getController().equals("Camera List")) {
+    println("neco");
+    switch(theEvent.getAction()) {
+      case(ControlP5.ACTION_ENTER): 
+      println("Action:ENTER");
+      break;
+    }
+  }
+}
+
 public void keyPressed() {
   keyHandler();
 }

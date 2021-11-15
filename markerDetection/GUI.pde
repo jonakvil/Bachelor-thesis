@@ -81,6 +81,16 @@ public class GUI {
     return cameras;
   }
 
+  public void cameraUpdate(){
+    println("UPDATING CAMERAS");
+    cameras = checkCameraList();
+    if(cameras != null){
+        cp5.get(ScrollableList.class, "Camera List").setItems(cameras);
+      }else{
+        cp5.get(ScrollableList.class, "Camera List").clear();
+      }
+  }
+
   public void cameraTimeout() {
     //Waiting 10 seconds for camera list init
     long timeBeforeCameraWaiting = second();
