@@ -29,40 +29,40 @@ public class GUI {
       .setPosition(50, 400)
       .setSize(200, 20)
       .setText(userIP)
-      .setLabel("Insert IP address of destination")
-      .setVisible(false);
+      .setLabel("Insert IP address of destination");
+      //.setVisible(false);
     cp5.addTextfield("Port")
       .setPosition(50, 360)
       .setSize(200, 20)
       .setText(listeningPort.toString())
-      .setLabel("The listening port")
-      .setVisible(false);
-    cp5.addScrollableList("Camera List")
+      .setLabel("The listening port");
+      //.setVisible(false);
+    cp5.addScrollableList("cameraList")
       .setPosition(50, 100)
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
-      .setValue(camIndex)
-      .setVisible(false);
+      .setValue(camIndex);
+      //.setVisible(false);
       if(cameras != null){
-        cp5.get(ScrollableList.class, "Camera List").setItems(cameras);
+        cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
       }
   }
 
   public void showGUI(){
     println("REVEALING");
     gui.isShown = true;
-    cp5.get(Textfield.class, "IPText").setVisible(true);
-    cp5.get(Textfield.class, "Port").setVisible(true);
-    cp5.get(ScrollableList.class, "Camera List").setVisible(true);
+    cp5.get(Textfield.class, "IPText").show();
+    cp5.get(Textfield.class, "Port").show();
+    cp5.get(ScrollableList.class, "cameraList").show();
   }
 
   public void hideGUI(){
     println("DISSOLVING");
     this.isShown = false;
-    cp5.get(Textfield.class, "IPText").setVisible(false);
-    cp5.get(Textfield.class, "Port").setVisible(false);
-    cp5.get(ScrollableList.class, "Camera List").setVisible(false);
+    cp5.get(Textfield.class, "IPText").hide();
+    cp5.get(Textfield.class, "Port").hide();
+    cp5.get(ScrollableList.class, "cameraList").hide();
   }
 
 
@@ -85,9 +85,9 @@ public class GUI {
     println("UPDATING CAMERAS");
     cameras = checkCameraList();
     if(cameras != null){
-        cp5.get(ScrollableList.class, "Camera List").setItems(cameras);
+        cp5.get(ScrollableList.class, "cameraList").setItems(cameras);
       }else{
-        cp5.get(ScrollableList.class, "Camera List").clear();
+        cp5.get(ScrollableList.class, "cameraList").clear();
       }
   }
 

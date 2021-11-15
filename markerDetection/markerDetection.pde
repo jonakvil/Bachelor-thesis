@@ -54,6 +54,7 @@ void setup() {
     cam.start();
   }
   gui.initGUI();
+  gui.hideGUI();
   gui.saveJSON(cameras);
 }
 
@@ -74,7 +75,7 @@ void draw()
     }
     cam.read();
     nya.detect(cam);
-    //background(0);
+    background(0);
     nya.drawBackground(cam);
     for (int i=0; i<markersNum; i++) {
       if ((nya.isExist(i))) {
