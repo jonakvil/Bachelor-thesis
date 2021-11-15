@@ -6,7 +6,6 @@ import netP5.*;
 import java.util.*;
 import processing.video.*;
 
-
 public class GUI {
   ControlP5 cp5;
   JSONObject json;
@@ -17,10 +16,13 @@ public class GUI {
   Integer listeningPort;
   String cameras[];
   boolean isShown;
+  ScrollableList sb;
 
-  public GUI(ControlP5 cp5) {
+
+  public GUI(ControlP5 cp5, ScrollableList sb) {
     this.cp5 = cp5;
     this.isShown = false;
+    this.sb = sb;
     loadJSON();
   }
 
@@ -30,26 +32,26 @@ public class GUI {
       .setSize(200, 20)
       .setText(userIP)
       .setLabel("Insert IP address of destination");
-      //.setVisible(false);
+    //.setVisible(false);
     cp5.addTextfield("Port")
       .setPosition(50, 360)
       .setSize(200, 20)
       .setText(listeningPort.toString())
       .setLabel("The listening port");
-      //.setVisible(false);
-    cp5.addScrollableList("cameraList")
+    //.setVisible(false);
+    sb = cp5.addScrollableList("cameraList")
       .setPosition(50, 100)
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
       .setValue(camIndex);
-      //.setVisible(false);
-      if(cameras != null){
-        cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
-      }
+    //.setVisible(false);
+    if (cameras != null) {
+      cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
+    }
   }
 
-  public void showGUI(){
+  public void showGUI() {
     println("REVEALING");
     gui.isShown = true;
     cp5.get(Textfield.class, "IPText").show();
@@ -57,7 +59,7 @@ public class GUI {
     cp5.get(ScrollableList.class, "cameraList").show();
   }
 
-  public void hideGUI(){
+  public void hideGUI() {
     println("DISSOLVING");
     this.isShown = false;
     cp5.get(Textfield.class, "IPText").hide();
@@ -68,7 +70,6 @@ public class GUI {
 
 
   public String[] checkCameraList() {
-
     cameraTimeout();
     cameras = Capture.list();
     if (cameras.length == 0) {
@@ -79,16 +80,6 @@ public class GUI {
       printArray(cameras);
     }
     return cameras;
-  }
-
-  public void cameraUpdate(){
-    println("UPDATING CAMERAS");
-    cameras = checkCameraList();
-    if(cameras != null){
-        cp5.get(ScrollableList.class, "cameraList").setItems(cameras);
-      }else{
-        cp5.get(ScrollableList.class, "cameraList").clear();
-      }
   }
 
   public void cameraTimeout() {
@@ -139,12 +130,13 @@ public class GUI {
       this.listeningPort = 12000;
     }
   }
-  
-    public void cameraList(int n) {
+
+  public String cameraList(int n) {
     println("User has chosen camera: " + cameras[n]);
     CColor c = new CColor();
     c.setBackground(color(255, 0, 0));
     cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c);
+    return cameras[n];
   }
 
   public String getUserIP() {
@@ -161,9 +153,9 @@ public class GUI {
   public int getIndex() {
     return camIndex;
   }
-  
-  public String [] getCameras(){
-   return cameras;
+
+  public String [] getCameras() {
+    return cameras;
   }
 
   public void setUserIP(String newIP) {
@@ -171,18 +163,20 @@ public class GUI {
     userIP = newIP;
     saveJSON(this.cameras);
   }
-  
-  public void setListeningPort(String newPort){
-      println("User entered port: " + newPort);
-      listeningPort = Integer.parseInt(newPort);
-      saveJSON(this.cameras);
+
+  public void setListeningPort(String newPort) {
+    println("User entered port: " + newPort);
+    listeningPort = Integer.parseInt(newPort);
+    saveJSON(this.cameras);
   }
 
   public void setLoadedCamera(String cam) {
     loadedCamera = cam;
   }
-  
-  public void setCameras(String [] c){
-   cameras = c;
+
+  public void setCameras(String [] c) {
+    cameras = c;
   }
+
+  
 }

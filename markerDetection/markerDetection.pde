@@ -12,6 +12,8 @@ MultiMarker nya;
 OscP5 oscP5;
 ControlP5 cp5;
 
+ScrollableList sb;
+
 PVector[] vecOfMarkers;
 int window_x = 640;
 int window_y = 480;
@@ -19,6 +21,7 @@ String[] cameras;
 int camIndex = -1;
 boolean isSetuped = true;
 int markersNum = 8;
+String currentCamName = "none";
 
 void setup() {
   //Basic setting
@@ -27,7 +30,7 @@ void setup() {
   println(MultiMarker.VERSION);
 
   cp5 = new ControlP5(this);
-  gui = new GUI(cp5);
+  gui = new GUI(cp5, sb);
   buf = new CircularBuffer(20);
   comm = new COMM(gui.getListeningPort(), gui.getUserIP()); 
   nya=new MultiMarker(this, width, height, "camera_para.dat", NyAR4PsgConfig.CONFIG_PSG);
@@ -49,6 +52,7 @@ void setup() {
   } else {
     printArray(cameras);
     cam = new Capture(this, cameras[gui.getIndex()]);
+    currentCamName = cameras[gui.getIndex()];
     gui.setCameras(cameras);
     isSetuped = true;
     cam.start();
@@ -62,16 +66,10 @@ void draw()
 {
   if (!isSetuped) {
     if ((cameras = gui.checkCameraList()) != null) {
-      cam.stop();
       isSetuped = true;
-      println("index: " + gui.getIndex());
-      cam = new Capture(this, cameras[gui.getIndex()]);
-      gui.saveJSON(cameras);
-      cam.start();
     }
-    background(30);
   } else {
-    if (cam.available() !=true && !gui.isShown) {
+    if (cam.available() !=true) {
       return;
     }
     cam.read();
@@ -89,11 +87,11 @@ void draw()
 }
 
 public void controlEvent(CallbackEvent theEvent) {
-  if (theEvent.getController().equals("Camera List")) {
-    println("neco");
+  if (theEvent.getController().equals(gui.sb)) {
     switch(theEvent.getAction()) {
       case(ControlP5.ACTION_ENTER): 
-      println("Action:ENTER");
+      println("Enter callback");
+      gui.checkCameraList();
       break;
     }
   }
@@ -133,7 +131,14 @@ public void Port(String portNum) {
 }
 
 void cameraList(int n) {
-  gui.cameraList(n);
+  if(!gui.cameraList(n).equals(currentCamName)){
+        cam.stop();
+        println("index: " + gui.getIndex());
+        cam = new Capture(this, cameras[gui.getIndex()]);
+        currentCamName = cameras[gui.getIndex()];
+        gui.saveJSON(cameras);
+        cam.start();
+  }
   camIndex = n;
 }
 
