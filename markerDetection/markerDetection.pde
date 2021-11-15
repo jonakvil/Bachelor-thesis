@@ -62,6 +62,7 @@ void draw()
 {
   if (!isSetuped) {
     if ((cameras = gui.checkCameraList()) != null) {
+      cam.stop();
       isSetuped = true;
       println("index: " + gui.getIndex());
       cam = new Capture(this, cameras[gui.getIndex()]);
