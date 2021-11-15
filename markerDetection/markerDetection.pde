@@ -36,30 +36,44 @@ void setup() {
   }
   vecOfMarkers = new PVector[markersNum]; 
 
-  gui.cameraTimeout();
   cameras = gui.checkCameraList();
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
-    cam=new Capture(this, window_x, window_y);
+    try {
+      cam=new Capture(this, window_x, window_y);
+    }
+    catch(IllegalStateException e) {
+      isSetuped = false;
+      println("No device available!");
+    }
   } else {
+    printArray(cameras);
     cam = new Capture(this, cameras[gui.getIndex()]);
+    gui.setCameras(cameras);
+    isSetuped = true;
+    cam.start();
   }
+  gui.initGUI();
   gui.saveJSON(cameras);
-  cam.start();
 }
 
 void draw()
 {
   if (!isSetuped) {
-    gui.checkCameraList();
-    background(240);
+    if (gui.checkCameraList() != null) {
+      isSetuped = true;
+      cam = new Capture(this, cameras[gui.getIndex()]);
+      gui.saveJSON(cameras);
+    }
+    background(30);
   } else {
-    if (cam.available() !=true) {
+    if (cam.available() !=true && !gui.isShown) {
       return;
     }
+    println("Bagr");
     cam.read();
     nya.detect(cam);
-    background(0);
+    //background(0);
     nya.drawBackground(cam);
     for (int i=0; i<markersNum; i++) {
       if ((nya.isExist(i))) {
@@ -71,18 +85,43 @@ void draw()
   }
 }
 
+public void keyPressed() {
+  keyHandler();
+}
+
+public void keyHandler() {
+  switch(key) {
+  case 'm':
+    if (key == 'm') {
+      if (!gui.isShown)
+      {
+        cam.stop();
+        gui.showGUI();
+        isSetuped = false;
+      } else {
+        gui.hideGUI();
+        isSetuped = true;
+        cam.start();
+      }
+    }
+    break;
+  }
+}
+
 public void oscEvent(OscMessage theOscMessage) {
   comm.event(theOscMessage);
 }
 
 public void IPText(String ip) {
-  println("User entered IP: " + ip);
-  isSetuped = true;
-  println("Chosen camera: " + cameras[camIndex]);
+  gui.setUserIP(ip);
+}
+
+public void Port(String portNum) {
+  gui.setListeningPort(portNum);
 }
 
 void cameraList(int n) {
-  gui.cameraList(cameras, n);
+  gui.cameraList(n);
   camIndex = n;
 }
 
