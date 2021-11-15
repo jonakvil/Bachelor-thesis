@@ -60,17 +60,18 @@ void setup() {
 void draw()
 {
   if (!isSetuped) {
-    if (gui.checkCameraList() != null) {
+    if ((cameras = gui.checkCameraList()) != null) {
       isSetuped = true;
+      println("index: " + gui.getIndex());
       cam = new Capture(this, cameras[gui.getIndex()]);
       gui.saveJSON(cameras);
+      cam.start();
     }
     background(30);
   } else {
     if (cam.available() !=true && !gui.isShown) {
       return;
     }
-    println("Bagr");
     cam.read();
     nya.detect(cam);
     //background(0);
@@ -95,13 +96,11 @@ public void keyHandler() {
     if (key == 'm') {
       if (!gui.isShown)
       {
-        cam.stop();
         gui.showGUI();
         isSetuped = false;
       } else {
         gui.hideGUI();
         isSetuped = true;
-        cam.start();
       }
     }
     break;

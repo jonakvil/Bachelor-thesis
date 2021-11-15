@@ -42,9 +42,11 @@ public class GUI {
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
-      .addItems(cameras)
       .setValue(camIndex)
       .setVisible(false);
+      if(cameras != null){
+        cp5.get(ScrollableList.class, "Camera List").setItems(cameras);
+      }
   }
 
   public void showGUI(){
