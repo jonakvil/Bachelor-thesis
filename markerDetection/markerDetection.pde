@@ -126,7 +126,7 @@ public void IPText(String ip) {
   gui.setUserIP(ip);
 }
 
-public void Port(String portNum) {
+public void Port(int portNum) {
   gui.setListeningPort(portNum);
 }
 

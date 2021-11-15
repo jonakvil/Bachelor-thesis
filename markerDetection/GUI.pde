@@ -32,20 +32,18 @@ public class GUI {
       .setSize(200, 20)
       .setText(userIP)
       .setLabel("Insert IP address of destination");
-    //.setVisible(false);
     cp5.addTextfield("Port")
       .setPosition(50, 360)
       .setSize(200, 20)
       .setText(listeningPort.toString())
-      .setLabel("The listening port");
-    //.setVisible(false);
+      .setLabel("The listening port")
+      .setInputFilter(ControlP5.INTEGER);
     sb = cp5.addScrollableList("cameraList")
       .setPosition(50, 100)
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
       .setValue(camIndex);
-    //.setVisible(false);
     if (cameras != null) {
       cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
     }
@@ -164,9 +162,9 @@ public class GUI {
     saveJSON(this.cameras);
   }
 
-  public void setListeningPort(String newPort) {
+  public void setListeningPort(int newPort) {
     println("User entered port: " + newPort);
-    listeningPort = Integer.parseInt(newPort);
+    listeningPort = newPort;
     saveJSON(this.cameras);
   }
 
