@@ -1,11 +1,5 @@
 import oscP5.*;
 import netP5.*;
-import websockets.*;
-WebsocketServer ws;
-
-void initWebsocket() {
-  ws = new WebsocketServer(this, 8081, "/coords");
-}
 
 public class COMM {
   OscP5 oscP5;
@@ -24,24 +18,22 @@ public class COMM {
         float xCoord = theOscMessage.get(1).floatValue();
         float yCoord = theOscMessage.get(2).floatValue();
         float zCoord = theOscMessage.get(3).floatValue();
-        //println("### received an osc message /corrds with typetag ifff ### ");
-        //println("ID: " + id + " X: " + xCoord + " Y: " + yCoord + " Z: " + zCoord);
+        println("### received an osc message /corrds with typetag ifff ### ");
+        println("ID: " + id + " X: " + xCoord + " Y: " + yCoord + " Z: " + zCoord);
         return;
       }
     }
-    //println("### received pattern: " + theOscMessage.addrPattern());
+    println("### received pattern: " + theOscMessage.addrPattern());
   }
 
   public void send(int i, PVector[] vec) {
-    //println("i: " + i + " normalized x/y/z: " + vec[i].x/window_x + " " + vec[i].y/window_y + " " + vec[i].z); 
-    //not normalized, just set to be in <0.0;1.0> screen coords
+    println("i: " + i + " normalized x/y/z: " + vec[i].x/window_x + " " + vec[i].y/window_y + " " + vec[i].z); 
+        //not normalized, just set to be in <0.0;1.0> screen coords
     myMessage = new OscMessage("/markersCoord");
     myMessage.add(i);
     myMessage.add(vec[i].x/window_x);
     myMessage.add(vec[i].y/window_y);
     myMessage.add(vec[i].z);
     this.oscP5.send(myMessage, myRemoteLocation);
-    
-    ws.sendMessage(i+":"+vec[i].x/window_x+":"+vec[i].y/window_y+":0");
   }
 }
