@@ -131,6 +131,7 @@ public class GUI {
 
   public String cameraList(int n) {
     println("User has chosen camera: " + cameras[n]);
+    camIndex = n;
     CColor c = new CColor();
     c.setBackground(color(255, 0, 0));
     cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c);
