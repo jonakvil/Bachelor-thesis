@@ -1,6 +1,8 @@
 # Bachelor thesis - UNDER DEVELOPMENT! Not ready for production - check out again in 1.1.2022
 Standalone fiducial markers tracking using a web camera. The application has a graphical user interface and is very simple to use. Tracking data are sent to a selected IP address as WebSocket string or OSC. Software is part of the interface to enable spatial audio rendering controlled with haptics interface. However, it can be used for any other use-cases that involve fiducial marker tracking. Developed by Vilém Jonák as part of bachelor thesis at Czech Technical University in Prague under the tutelage of Vojtech Leischner. Supported by Human interaction department CVUT https://dcgi.fel.cvut.cz/
 
+![tabletop schema](/images/tabletop_schema.jpg)
+
 ## TODO LIST
 * **improve smoothing movement of the markers instances - slow down when you reach the target location**
 * add user option to set time delay after which the marker instance is discarded when the marker was not detected for longer than x miliseconds
