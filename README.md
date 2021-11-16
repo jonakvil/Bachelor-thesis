@@ -2,12 +2,12 @@
 Standalone fiducial markers tracking using a web camera. The application has a graphical user interface and is very simple to use. Tracking data are sent to a selected IP address as WebSocket string or OSC. Software is part of the interface to enable spatial audio rendering controlled with haptics interface. However, it can be used for any other use-cases that involve fiducial marker tracking. Developed by Vilém Jonák as part of bachelor thesis at Czech Technical University in Prague under the tutelage of Vojtech Leischner. Supported by Human interaction department CVUT https://dcgi.fel.cvut.cz/
 
 ## TODO LIST
-* improve smoothing movement of the markers instances - slow down when you reach the target location
+* **improve smoothing movement of the markers instances - slow down when you reach the target location**
 * add user option to set time delay after which the marker instance is discarded when the marker was not detected for longer than x miliseconds
 * enable perspective ddeformation of camera image to support camera from angle setup
 * fix bug in color highlight when selecting camera ( choosen option is highlighted but when you choose other option the previous highlight is not cleared)
 * check for camera change - only when user choose different camera stop the previous and start the capture using the new one
-* 
+* add toglle user option to turn off or on the movement smoothng (interpolate between detected positions or send only detected position)
 
 ## Download
 * [MacOS](https://)
