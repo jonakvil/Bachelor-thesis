@@ -77,11 +77,6 @@ public class GUI {
       println("Available cameras:");
       printArray(cameras);
     }
-    if(sb!= null && cameras != null){
-      sb.setItems(cameras); 
-    }else if(sb != null && cameras == null){
-      sb.clear();
-    }
     return cameras;
   }
 
@@ -181,4 +176,6 @@ public class GUI {
   public void setCameras(String [] c) {
     cameras = c;
   }
+
+  
 }
