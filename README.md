@@ -8,6 +8,7 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 * fix bug in color highlight when selecting camera ( choosen option is highlighted but when you choose other option the previous highlight is not cleared)
 * check for camera change - only when user choose different camera stop the previous and start the capture using the new one
 * add toggle user option to turn off or on the movement smoothng (interpolate between detected positions or send only detected position)
+* let user choose the acceleration of the markers used for movement smoothing - general settings or per marker settings?
 
 ## Download
 * [MacOS](https://)
