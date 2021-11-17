@@ -26,7 +26,7 @@ String currentCamName = "none";
 void setup() {
   //Basic setting
   size(640, 480, P3D);
-  colorMode(RGB, 100);
+
   println(MultiMarker.VERSION);
 
   cp5 = new ControlP5(this);
@@ -78,10 +78,36 @@ void draw()
     nya.drawBackground(cam);
     for (int i=0; i<markersNum; i++) {
       if ((nya.isExist(i))) {
-        vecOfMarkers[i] = drawPoint(nya.getMarkerVertex2D(i));
-        comm.send(i, vecOfMarkers);
+
+        boolean idmatch = false;
+        for (int cid=0; cid<sources.size(); cid++) {
+          if ( sources.get(cid).id == i ) {
+            idmatch = true;
+            sources.get(cid).newtarget = sources.get(cid).getCentroid( nya.getMarkerVertex2D(i) );
+            sources.get(cid).lastupdate = millis();
+          }
+        }  
+
+        if ( !idmatch ) {
+          sources.add( new Mover(i, nya.getMarkerVertex2D(i)  ) ); //create new one
+        }
+
+        //vecOfMarkers[i] = drawPoint(nya.getMarkerVertex2D(i));
+        //comm.send(i, vecOfMarkers);
       }
     }
+
+    ArrayList<Mover> updatedList = new ArrayList<Mover>();
+    for (int cid=0; cid<sources.size(); cid++) {
+      sources.get(cid).update();
+      if ( sources.get(cid).lastupdate > millis()-1000 ) {
+        updatedList.add( sources.get(cid) );
+      } else {
+        println("marker "+sources.get(cid).id+" lost");
+      }
+    }
+    sources = updatedList; //discard old and dead particles
+
     countFPS();
   }
 }
@@ -131,18 +157,18 @@ public void Port(int portNum) {
 }
 
 void cameraList(int n) {
-  if(!gui.cameraList(n).equals(currentCamName)){
-        cam.stop();
-        println("index: " + gui.getIndex());
-        cam = new Capture(this, cameras[gui.getIndex()]);
-        currentCamName = cameras[gui.getIndex()];
-        gui.saveJSON(cameras);
-        cam.start();
+  if (!gui.cameraList(n).equals(currentCamName)) {
+    cam.stop();
+    println("index: " + gui.getIndex());
+    cam = new Capture(this, cameras[gui.getIndex()]);
+    currentCamName = cameras[gui.getIndex()];
+    gui.saveJSON(cameras);
+    cam.start();
   }
   camIndex = n;
 }
 
-PVector drawPoint(PVector[] vec)
+PVector getCentroid(PVector[] vec)
 {
   float x = 0;
   float y = 0;
@@ -151,7 +177,7 @@ PVector drawPoint(PVector[] vec)
     y+=vec[i].y;
   }
   PVector res = new PVector(x*0.25, y*0.25, 0);
-  ellipse(res.x, res.y, 10, 10);
+  //ellipse(res.x, res.y, 10, 10);
   return res;
 }
 

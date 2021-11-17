@@ -31,18 +31,21 @@ public class GUI {
       .setPosition(50, 400)
       .setSize(200, 20)
       .setText(userIP)
+      .setColorBackground(#2596DC)
       .setLabel("Insert IP address of destination");
     cp5.addTextfield("Port")
       .setPosition(50, 360)
       .setSize(200, 20)
       .setText(listeningPort.toString())
       .setLabel("The listening port")
+      .setColorBackground(#2596DC)
       .setInputFilter(ControlP5.INTEGER);
     sb = cp5.addScrollableList("cameraList")
       .setPosition(50, 100)
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
+      .setColorBackground(#2596DC)
       .setValue(camIndex);
     if (cameras != null) {
       cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
@@ -76,11 +79,6 @@ public class GUI {
     } else {
       println("Available cameras:");
       printArray(cameras);
-    }
-    if(sb!= null && cameras != null){
-      sb.setItems(cameras); 
-    }else if(sb != null && cameras == null){
-      sb.clear();
     }
     return cameras;
   }
@@ -136,10 +134,14 @@ public class GUI {
 
   public String cameraList(int n) {
     println("User has chosen camera: " + cameras[n]);
-    camIndex = n;
     CColor c = new CColor();
-    c.setBackground(color(255, 0, 0));
-    cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c);
+    CColor c2 = new CColor();
+    c.setBackground(#2596DC);
+    c2.setBackground(color(255,0,0));
+    
+    sb.getItem(camIndex).put("color", c);
+    camIndex = n;
+    sb.getItem(n).put("color", c2);
     return cameras[n];
   }
 
@@ -181,4 +183,6 @@ public class GUI {
   public void setCameras(String [] c) {
     cameras = c;
   }
+
+  
 }
