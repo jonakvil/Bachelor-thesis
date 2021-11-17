@@ -19,6 +19,7 @@ public class GUI {
   ScrollableList sb;
 
 
+
   public GUI(ControlP5 cp5, ScrollableList sb) {
     this.cp5 = cp5;
     this.isShown = false;
@@ -49,6 +50,9 @@ public class GUI {
       .setValue(camIndex);
     if (cameras != null) {
       cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
+      CColor c = new CColor();
+      c.setBackground(color(255, 0, 0));
+      sb.getItem(camIndex).put("color", c);
     }
   }
 
@@ -137,8 +141,8 @@ public class GUI {
     CColor c = new CColor();
     CColor c2 = new CColor();
     c.setBackground(#2596DC);
-    c2.setBackground(color(255,0,0));
-    
+    c2.setBackground(color(255, 0, 0));
+
     sb.getItem(camIndex).put("color", c);
     camIndex = n;
     sb.getItem(n).put("color", c2);
@@ -183,6 +187,4 @@ public class GUI {
   public void setCameras(String [] c) {
     cameras = c;
   }
-
-  
 }
