@@ -40,7 +40,13 @@ class Mover {
   void update() {  
     // Compute a vector that points from location to mouse
     //PVector mouse = newtarget; //new PVector(mouseX, mouseY);
+    
     PVector acceleration = PVector.sub(newtarget, location);
+    if(newtarget.dist(location) < 7.5){
+      location = newtarget;
+      display();
+      return;
+    }
     // Set magnitude of acceleration
     acceleration.setMag(1.2);
     // Velocity changes according to acceleration
