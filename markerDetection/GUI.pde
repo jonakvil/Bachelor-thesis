@@ -13,6 +13,7 @@ public class GUI {
   String userIP;
   String loadedCamera;
   int camIndex;
+  
   Integer listeningPort;
   String cameras[];
   boolean isShown;

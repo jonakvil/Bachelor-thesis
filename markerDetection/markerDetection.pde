@@ -83,7 +83,8 @@ void draw()
         for (int cid=0; cid<sources.size(); cid++) {
           if ( sources.get(cid).id == i ) {
             idmatch = true;
-            sources.get(cid).newtarget = sources.get(cid).getCentroid( nya.getMarkerVertex2D(i) );
+            sources.get(cid).newtarget = sources.get(cid).getCentroid( nya.getMarkerVertex2D(i));
+            sources.get(cid).markerSize = sources.get(cid).getMarkerSize(nya.getMarkerVertex2D(i));
             sources.get(cid).lastupdate = millis();
           }
         }  

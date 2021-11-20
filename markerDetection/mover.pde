@@ -8,6 +8,7 @@ class Mover {
   PVector acceleration;
   // The Mover's maximum speed
   float topspeed;
+  float markerSize;
   PVector[] corners;
   long lastupdate = 0;
   PVector newtarget; //last detected marker position
@@ -21,7 +22,7 @@ class Mover {
     velocity = new PVector(0, 0);
     topspeed = 10;
     lastupdate = millis();
-    col = color( int(random(0,255)), int(random(0,255)) , int(random(0,255)), 150 );
+    col = color( int(random(0, 255)), int(random(0, 255)), int(random(0, 255)), 150 );
   }
 
   PVector getCentroid(PVector[] vec)
@@ -37,18 +38,46 @@ class Mover {
     return res;
   }
 
+  float getMarkerSize(PVector[] cors) {
+    float sum = 0;
+    sum = cors[0].dist(cors[1]);
+    println("distance: " + sum);
+    return sum;
+  }
+
   void update() {  
     // Compute a vector that points from location to mouse
     //PVector mouse = newtarget; //new PVector(mouseX, mouseY);
-    
+
     PVector acceleration = PVector.sub(newtarget, location);
-    if(newtarget.dist(location) < 7.5){
+    fill(color(255, 0, 0));
+    ellipse(newtarget.x, newtarget.y, 30, 30);
+
+    PVector normNewTarget = new PVector(newtarget.x/640, newtarget.y/480);
+    PVector normLocation = new PVector(location.x/640, location.y/480);
+    float normDist = normNewTarget.dist(normLocation);
+    println("norm dist: " + normDist);
+    
+    if (newtarget.dist(location) < this.markerSize/2) {
+      topspeed = 20;
+      println("size: " + this.markerSize/8);
+      pow(acceleration.x, 2);
+      pow(acceleration.y, 2);
+      acceleration.setMag(4);
+      display();
+    }
+
+    if (newtarget.dist(location) < this.markerSize/8) {
+      println("size: " + this.markerSize/8);
       location = newtarget;
       display();
       return;
+    } else {
+
+      // Set magnitude of acceleration
+      println("speed: " + (1 + 2*(normDist)));
+      acceleration.setMag(1 + 2*(normDist));
     }
-    // Set magnitude of acceleration
-    acceleration.setMag(1.2);
     // Velocity changes according to acceleration
     velocity.add(acceleration);
     // Limit the velocity by topspeed
@@ -56,6 +85,7 @@ class Mover {
     // Location changes by velocity
     location.add(velocity);
 
+    topspeed = 10;
     display();
   }
 
