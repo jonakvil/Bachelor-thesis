@@ -11,6 +11,7 @@ class Mover {
   float markerSize;
   PVector[] corners;
   long lastupdate = 0;
+  int jumpOffset = 3;
   PVector newtarget; //last detected marker position
   color col;
 
@@ -57,29 +58,19 @@ class Mover {
     PVector normLocation = new PVector(location.x/640, location.y/480);
     float normDist = normNewTarget.dist(normLocation);
     println("norm dist: " + normDist);
-    
-    if (newtarget.dist(location) < this.markerSize/2) {
-      topspeed = 20;
-      println("size: " + this.markerSize/8);
-      pow(acceleration.x, 2);
-      pow(acceleration.y, 2);
-      acceleration.setMag(4);
-      display();
-    }
 
-    if (newtarget.dist(location) < this.markerSize/8) {
-      println("size: " + this.markerSize/8);
+    if (newtarget.dist(location) < jumpOffset) {
       location = newtarget;
       display();
       return;
     } else {
 
       // Set magnitude of acceleration
-      println("speed: " + (1 + 2*(normDist)));
-      acceleration.setMag(1 + 2*(normDist));
+      acceleration.setMag(1 + 2*(normDist*20));
     }
     // Velocity changes according to acceleration
-    velocity.add(acceleration);
+    //velocity.add(acceleration);
+    velocity = acceleration;
     // Limit the velocity by topspeed
     velocity.limit(topspeed);
     // Location changes by velocity
