@@ -56,7 +56,7 @@ public class GUI {
     }
     // create a toggle for turn on/off smoothing for movement tracking
     cp5.addToggle("smooth")
-      .setPosition(40, 250)
+      .setPosition(50, 250)
       .setSize(50, 20)
       .setValue(smooth)
       .setMode(ControlP5.SWITCH)
