@@ -171,19 +171,6 @@ void cameraList(int n) {
   camIndex = n;
 }
 
-PVector getCentroid(PVector[] vec)
-{
-  float x = 0;
-  float y = 0;
-  for (int i = 0; i < 4; i++) {
-    x+=vec[i].x;
-    y+=vec[i].y;
-  }
-  PVector res = new PVector(x*0.25, y*0.25, 0);
-  //ellipse(res.x, res.y, 10, 10);
-  return res;
-}
-
 void countFPS() {
   if (frameCount%30 == 0) {
     buf.insert(round(frameRate));
