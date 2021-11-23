@@ -1,0 +1,12 @@
+{
+  "/interpolate": {"value": 1},
+  "/cameraList": {"value": 1},
+  "/currentCamName": {"text": "c922 Pro Stream Webcam"},
+  "/listeningPort": {"text": "12000"},
+  "/maxspeed": {
+    "min": 1,
+    "max": 50,
+    "value": 9.329999923706055
+  },
+  "/inputIP": {"text": "127.0.0.1"}
+}

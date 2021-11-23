@@ -5,43 +5,35 @@ import netP5.*;
 import controlP5.*;
 
 CircularBuffer buf;
-GUI gui;
 COMM comm;
 Capture cam;
 MultiMarker nya;
 OscP5 oscP5;
-ControlP5 cp5;
 
-ScrollableList sb;
-
-PVector[] vecOfMarkers;
 int window_x = 640;
 int window_y = 480;
-String[] cameras;
-int camIndex = -1;
+
 boolean isSetuped = true;
 int markersNum = 8;
-String currentCamName = "none";
-
-boolean smooth = true;
+boolean interpolate = true; //whether to interpolate values between marker detected positions - results in interpolateer movement
 
 void setup() {
   //Basic setting
   size(640, 480, P3D);
-
   println(MultiMarker.VERSION);
 
-  cp5 = new ControlP5(this);
-  gui = new GUI(cp5, sb);
+
+
+  initGUI();
+
   buf = new CircularBuffer(20);
-  comm = new COMM(gui.getListeningPort(), gui.getUserIP());
+  comm = new COMM();
   nya=new MultiMarker(this, width, height, "camera_para.dat", NyAR4PsgConfig.CONFIG_PSG);
   for (int i = 0; i < markersNum; i++) {
     nya.addNyIdMarker(i, 80);
   }
-  vecOfMarkers = new PVector[markersNum];
 
-  cameras = gui.checkCameraList();
+
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
     try {
@@ -53,20 +45,17 @@ void setup() {
     }
   } else {
     printArray(cameras);
-    cam = new Capture(this, cameras[gui.getIndex()]);
-    currentCamName = cameras[gui.getIndex()];
-    gui.setCameras(cameras);
+    cam = new Capture(this, cameras[camIndex]);
+    currentCamName = cameras[camIndex];
     isSetuped = true;
     cam.start();
   }
-  gui.initGUI();
-  gui.saveJSON(cameras);
 }
 
 void draw()
 {
   if (!isSetuped) {
-    if ((cameras = gui.checkCameraList()) != null) {
+    if ((cameras = checkCameraList()) != null) {
       isSetuped = true;
     }
   } else {
@@ -94,21 +83,21 @@ void draw()
           sources.add( new Mover(i, nya.getMarkerVertex2D(i)  ) ); //create new one
         }
 
-        if (!smooth) {
-          comm.send(i, sources.get(i).location );
+        if (!interpolate) { //send coordinates of only properly detected markers!
+          comm.send(i, sources.get(i).location ); //send marker ID + current location
         }
-        //vecOfMarkers[i] = drawPoint(nya.getMarkerVertex2D(i));
       }
     }
 
+    //check collection of markers instances
+    //if we are not detecking given marker for longer then x it means it has dissappeared
     ArrayList<Mover> updatedList = new ArrayList<Mover>();
     for (int cid=0; cid<sources.size(); cid++) {
       sources.get(cid).update();
-
-      if (smooth) {
+      //send every marker id + location to remote including interpolated locations
+      if (interpolate) {
         comm.send(cid, sources.get(cid).location );
       }
-
       if ( sources.get(cid).lastupdate > millis()-1000 ) {
         updatedList.add( sources.get(cid) );
       } else {
@@ -116,60 +105,24 @@ void draw()
       }
     }
     sources = updatedList; //discard old and dead particles
-    countFPS();
+    countFPS(); //keep track of performance
   }
 
+  fill(255);
   text("press m to hide / show menu", 50, 50 );
-  if (gui.isShown) {
+  if (renderGUI) {
     cp5.draw();
   }
 }
 
-public void controlEvent(CallbackEvent theEvent) {
-  if (theEvent.getController().equals(gui.sb)) {
-    switch(theEvent.getAction()) {
-      case(ControlP5.ACTION_ENTER):
-      println("Enter callback");
-      gui.checkCameraList();
-      break;
-    }
-  }
-}
 
 public void keyPressed() {
-  keyHandler();
-}
-
-public void keyHandler() {
   switch(key) {
   case 'm':
-    gui.showGUI();
+    //turn on or off rendering of the GUI
+    renderGUI = !renderGUI;
     break;
   }
-}
-
-public void oscEvent(OscMessage theOscMessage) {
-  comm.event(theOscMessage);
-}
-
-public void IPText(String ip) {
-  gui.setUserIP(ip);
-}
-
-public void Port(int portNum) {
-  gui.setListeningPort(portNum);
-}
-
-void cameraList(int n) {
-  if (!gui.cameraList(n).equals(currentCamName)) {
-    cam.stop();
-    println("index: " + gui.getIndex());
-    cam = new Capture(this, cameras[gui.getIndex()]);
-    currentCamName = cameras[gui.getIndex()];
-    gui.saveJSON(cameras);
-    cam.start();
-  }
-  camIndex = n;
 }
 
 void countFPS() {

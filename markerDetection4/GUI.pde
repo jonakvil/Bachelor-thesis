@@ -6,178 +6,198 @@ import netP5.*;
 import java.util.*;
 import processing.video.*;
 
-public class GUI {
-  ControlP5 cp5;
-  JSONObject json;
-  String pathToSavedOptions = "data/options.json";
-  String userIP;
-  String loadedCamera;
-  int camIndex;
 
-  Integer listeningPort;
-  String cameras[];
-  boolean isShown;
-  ScrollableList sb;
+ControlP5 cp5;
+String inputIP = "127.0.0.1";
+String loadedCamera = "";
+String currentCamName = "none";
+int camIndex = 0;
+Integer listeningPort = 12000;
+String cameras[];
+boolean renderGUI = true; //on first run always show GUI
+float maxspeed = 10;
+ScrollableList sb;
 
-  public GUI(ControlP5 cp5, ScrollableList sb) {
-    this.cp5 = cp5;
-    cp5.setAutoDraw(false);
-    this.isShown = true;
-    this.sb = sb;
-    loadJSON();
-  }
-
-  public void initGUI() {
-    cp5.addTextfield("IPText")
-      .setPosition(50, 400)
-      .setSize(200, 20)
-      .setText(userIP)
-      .setColorBackground(#2596DC)
-      .setLabel("Insert IP address of destination");
-    cp5.addTextfield("Port")
-      .setPosition(50, 360)
-      .setSize(200, 20)
-      .setText(listeningPort.toString())
-      .setLabel("The listening port")
-      .setColorBackground(#2596DC)
-      .setInputFilter(ControlP5.INTEGER);
-    sb = cp5.addScrollableList("cameraList")
-      .setPosition(50, 100)
-      .setSize(200, 100)
-      .setBarHeight(20)
-      .setItemHeight(20)
-      .setColorBackground(#2596DC)
-      .setValue(camIndex);
-    if (cameras != null) {
-      cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
-      CColor c = new CColor();
-      c.setBackground(color(255, 0, 0));
-      sb.getItem(camIndex).put("color", c);
-    }
-    // create a toggle for turn on/off smoothing for movement tracking
-    cp5.addToggle("smooth")
-      .setPosition(50, 250)
-      .setSize(50, 20)
-      .setValue(smooth)
-      .setMode(ControlP5.SWITCH)
-      ;
-  }
-
-  public void showGUI() {
-    gui.isShown = !gui.isShown;
-  }
-
-  public String[] checkCameraList() {
-    cameraTimeout();
-    cameras = Capture.list();
-    if (cameras.length == 0) {
-      println("There are no cameras available for capture.");
-      cameras = null;
-    } else {
-      println("Available cameras:");
-      printArray(cameras);
-    }
-    return cameras;
-  }
-
-  public void cameraTimeout() {
-    //Waiting 10 seconds for camera list init
-    long timeBeforeCameraWaiting = second();
-    long t = second();
-    println("waiting for cameras");
-    while ( Capture.list().length == 0 ) {
-      if (second() - t > 0) {
-        t= second();
-        print(". ");
-      }
-      if (second() - timeBeforeCameraWaiting > 1) //wait 5 secs
-      {
-        break;
-      }
-    }
-    println();
-  }
-
-  public void saveJSON(String[] cameras) {
-    try {
-      json.setString("cameraName", cameras[camIndex]);
-    }
-    catch(NullPointerException e) {
-      json.setString("cameraName", "");
-    }
-    json.setInt("index", camIndex);
-    //userIP = cp5.get(Textfield.class, "IPText").getText();
-    json.setString("ip", userIP);
-    json.setInt("port", listeningPort);
-    saveJSONObject(json, pathToSavedOptions);
-  }
-
-  public void loadJSON() {
-    try {
-      this.json = loadJSONObject(pathToSavedOptions);
-      this.userIP = json.getString("ip");
-      this.loadedCamera = json.getString("cameraName");
-      this.camIndex = json.getInt("index");
-      this.listeningPort = json.getInt("port");
-    }
-    catch(NullPointerException e) {
-      this.json = new JSONObject();
-      this.userIP = "127.0.0.1";
-      this.loadedCamera = "";
-      this.camIndex = 0;
-      this.listeningPort = 12000;
-    }
-  }
-
-  public String cameraList(int n) {
-    println("User has chosen camera: " + cameras[n]);
+public void initGUI() {
+  cp5 = new ControlP5(this);
+  cp5.setBroadcast(false);
+  cp5.setAutoDraw(false); //turn off automatic rendering - we want to control this manully inside main draw() fce
+  //create dropdown list of avaliable cameras for capture - let user select the right one
+  sb = cp5.addScrollableList("cameraList")
+    .setPosition(50, 100)
+    .setSize(200, 100)
+    .setBarHeight(20)
+    .setItemHeight(20)
+    .setColorBackground(#2596DC)
+    .onEnter(toFront) //callback on mouse hover
+    .onLeave(close) //callback on mouse hover
+    .setValue(camIndex);
+  if (cameras != null) { //in case there are cameras avaliable include them in the list
+    cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
     CColor c = new CColor();
-    CColor c2 = new CColor();
-    c.setBackground(#2596DC);
-    c2.setBackground(color(255, 0, 0));
-
+    c.setBackground(color(255, 0, 0));
     sb.getItem(camIndex).put("color", c);
-    camIndex = n;
-    sb.getItem(n).put("color", c2);
-    return cameras[n];
   }
+  // create a toggle for turn on/off interpolateing for movement tracking
+  cp5.addToggle("interpolate")
+    .setPosition(50, 270)
+    .setSize(50, 20)
+    .setValue(interpolate)
+    .setMode(ControlP5.SWITCH)
+    ;
+  //create slider to set max acceleration used for interpolateing
+  cp5.addSlider("maxspeed")
+    .setPosition(50, 320)
+    .setLabel("max speed")
+    .setSize(200, 20)
+    .setRange(1, 50)
+    .setValue(maxspeed);
+  cp5.getController("maxspeed").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+  cp5.getController("maxspeed").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+  //create port input field
+  cp5.addTextfield("listeningPort")
+    .setPosition(50, 360)
+    .setSize(200, 20)
+    .setText(listeningPort.toString())
+    .setLabel("The listening port")
+    .setColorBackground(#2596DC)
+    .setInputFilter(ControlP5.INTEGER);
+  //create remote IP adress field - used for Websockets
+  cp5.addTextfield("inputIP")
+    .setPosition(50, 400)
+    .setSize(200, 20)
+    .setText(inputIP)
+    .setColorBackground(#2596DC)
+    .setLabel("Insert IP address of destination");
+  //this controller is never shown to user - only serves to save the selected camera name
+  cp5.addTextfield("currentCamName")
+    .setValue(currentCamName)
+    .hide();
 
-  public String getUserIP() {
-    return userIP;
-  }
-  public int getListeningPort() {
-    return listeningPort;
-  }
+  cameras = checkCameraList(); //get avaliable cameras into variable
 
-  public String getLoadedCamera() {
-    return loadedCamera;
-  }
+  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
+  cp5.setBroadcast(true);
+}
 
-  public int getIndex() {
-    return camIndex;
+//Callback listener for mouse hover events
+CallbackListener toFront = new CallbackListener() {
+  public void controlEvent(CallbackEvent theEvent) {
+    theEvent.getController().bringToFront();
+    ((ScrollableList)theEvent.getController()).open();
+    //in case of avaliable cameras menu also check for new or removed camera devices - update accroding to current state
+    if (theEvent.getController().equals(sb)) {
+      checkCameraList();
+    }
   }
+};
+//Callback listener for mouse hover events
+CallbackListener close = new CallbackListener() {
+  public void controlEvent(CallbackEvent theEvent) {
+    ((ScrollableList)theEvent.getController()).close();
+  }
+};
 
-  public String [] getCameras() {
-    return cameras;
-  }
 
-  public void setUserIP(String newIP) {
-    println("User entered IP: " + newIP);
-    userIP = newIP;
-    saveJSON(this.cameras);
+void cameraTimeout() {
+  //Waiting 10 seconds for camera list init
+  long timeBeforeCameraWaiting = second();
+  long t = second();
+  println("waiting for cameras");
+  while ( Capture.list().length == 0 ) {
+    if (second() - t > 0) {
+      t= second();
+      print(". ");
+    }
+    if (second() - timeBeforeCameraWaiting > 1) //wait 5 secs
+    {
+      break;
+    }
   }
+  println();
+}
 
-  public void setListeningPort(int newPort) {
-    println("User entered port: " + newPort);
-    listeningPort = newPort;
-    saveJSON(this.cameras);
-  }
+void cameraList(int n) {
+  println("User has chosen camera: " + cameras[n]);
 
-  public void setLoadedCamera(String cam) {
-    loadedCamera = cam;
+  if (!cameras[n].equals(currentCamName)) { //in case use selected camera that was not previously used
+    cam.stop(); //stop the current camera capture
+    //println("index: " + camIndex);
+    cam = new Capture(this, cameras[camIndex]); //create new camera capture
+    //currentCamName( cameras[camIndex] ) ; //save current camera name to variable
+    cp5.get(Textfield.class, "currentCamName").setValue( cameras[camIndex] ); //save variable into input field
+    //println("curr cam set to "+cp5.get(Textfield.class, "currentCamName").getText() );
+    cam.start();//start camera capture
+    camIndex = n; //save selected camera index
+    saveProperties();
+  } else {
+    println("selected camera already in use");
   }
+}
 
-  public void setCameras(String [] c) {
-    cameras = c;
+public String[] checkCameraList() {
+  cameras = Capture.list();
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    cameras = null;
+  } else {
+    println("Available cameras:");
+    printArray(cameras);
   }
+  if (cameras != null) { //in case there are cameras avaliable include them in the list
+    sb.setItems(cameras);
+  }
+  return cameras;
+}
+
+void currentCamName(String val) {
+  currentCamName = val;
+}
+
+
+public void inputIP(String newIP) {
+  println("User entered IP: " + newIP);
+  inputIP = newIP;
+  saveProperties();
+}
+
+void listeningPort(String currPort) {
+  int newPort = int(currPort);
+  println("User entered port: " + newPort);
+  listeningPort = newPort;
+  saveProperties();
+}
+
+void maxspeed(float val) {
+  maxspeed = val;
+  for (Mover m : sources) {
+    m.topspeed = val;
+  }
+  saveProperties();
+}
+
+void interpolate(boolean val) {
+  interpolate = val;
+  saveProperties();
+}
+
+void saveProperties() {
+  cp5.saveProperties(dataPath("settings.json"));
+}
+
+void loadProperties() {
+  try {
+    cp5.loadProperties(dataPath("settings.json"));
+  }
+  catch (Exception e) {
+    println("There was an error loading settings - probably wrong format. Try to delete the settings file or cahnge some settings now to reset"+e);
+  }
+  if (cameras != null ) {
+    for (int i=0; i<cameras.length; i++) {
+      if ( currentCamName == cameras[i]) {
+        println("match between saved camera and avaliable cameras found");
+      }
+    }
+  }
+  //cp5.get(Textfield.class, "currentCamName").getText();
 }

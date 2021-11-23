@@ -1,8 +1,8 @@
 {
   "port": 12000,
   "ip": "127.0.0.1",
-  "index": 0,
+  "index": 1,
   "smoothing": true,
-  "cameraName": "Trust Webcam: Trust Webcam",
-  "speed": 5
+  "cameraName": "3D USB Camera",
+  "speed": 10
 }

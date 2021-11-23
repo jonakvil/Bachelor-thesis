@@ -2,7 +2,7 @@ ArrayList<Mover> sources = new ArrayList<Mover>();
 
 class Mover {
   int id;
-  // The Mover tracks location, velocity, and acceleration 
+  // The Mover tracks location, velocity, and acceleration
   PVector location;
   PVector velocity;
   PVector acceleration;
@@ -42,11 +42,11 @@ class Mover {
   float getMarkerSize(PVector[] cors) {
     float sum = 0;
     sum = cors[0].dist(cors[1]);
-    println("distance: " + sum);
+    //println("distance: " + sum);
     return sum;
   }
 
-  void update() {  
+  void update() {
     // Compute a vector that points from location to mouse
     //PVector mouse = newtarget; //new PVector(mouseX, mouseY);
 
@@ -63,10 +63,6 @@ class Mover {
       location = newtarget;
       display();
       return;
-    } else {
-
-      // Set magnitude of acceleration
-      //acceleration.setMag(1 + 2*(normDist*20));
     }
     // Velocity changes according to acceleration
     //velocity.add(acceleration);
@@ -75,15 +71,13 @@ class Mover {
     velocity.limit(topspeed);
     // Location changes by velocity
     location.add(velocity);
-
-    //topspeed = 10;
-    display();
+    display(); //render to screen visualized interpolated position
   }
 
   void display() {
-    //stroke(255,0,0);
-    //strokeWeight(2);
-    fill(col);
-    ellipse(location.x, location.y, 48, 48);
+    if (interpolate) { //in case interpolation is ON
+      fill(col);
+      ellipse(location.x, location.y, 48, 48);
+    }
   }
 }
