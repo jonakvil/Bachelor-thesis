@@ -6,26 +6,22 @@ import netP5.*;
 import java.util.*;
 import processing.video.*;
 
+
 public class GUI {
   ControlP5 cp5;
   JSONObject json;
   String pathToSavedOptions = "data/options.json";
   String userIP;
   String loadedCamera;
-  float speed;
-  boolean wantSmooth;
   int camIndex;
-
   Integer listeningPort;
+  //ArrayList<String> cameras = new ArrayList<String>();
   String cameras[];
   boolean isShown;
-  ScrollableList sb;
 
-
-  public GUI(ControlP5 cp5, ScrollableList sb) {
+  public GUI(ControlP5 cp5) {
     this.cp5 = cp5;
     this.isShown = false;
-    this.sb = sb;
     loadJSON();
   }
 
@@ -34,65 +30,49 @@ public class GUI {
       .setPosition(50, 400)
       .setSize(200, 20)
       .setText(userIP)
-      .setColorBackground(#2596DC)
-      .setLabel("Insert IP address of destination");
+      .setLabel("Insert IP address of destination")
+      .setVisible(false);
     cp5.addTextfield("Port")
       .setPosition(50, 360)
       .setSize(200, 20)
       .setText(listeningPort.toString())
       .setLabel("The listening port")
-      .setColorBackground(#2596DC)
-      .setInputFilter(ControlP5.INTEGER);
-    sb = cp5.addScrollableList("cameraList")
+      .setVisible(false);
+    cp5.addScrollableList("Camera List")
       .setPosition(50, 100)
       .setSize(200, 100)
       .setBarHeight(20)
       .setItemHeight(20)
-      .setColorBackground(#2596DC)
-      .setValue(camIndex);
-    cp5.addToggle("Smoothing_Toggle")
-      .setPosition(100, 200)
-      .setSize(50, 20)
-      .setValue(wantSmooth);
-    cp5.addSlider("Smoothing")
-      .setPosition(400, 400)
-      .setSize(200, 20)
-      .setRange(0, 50)
-      .setValue(speed);
-    cp5.getController("Smoothing").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
-    cp5.getController("Smoothing").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
-
-    if (cameras != null) {
-      cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
-      CColor c = new CColor();
-      c.setBackground(color(255, 0, 0));
-      sb.getItem(camIndex).put("color", c);
+      //.addItems(cameras)
+      .setValue(camIndex)
+      .setVisible(false);
+      
+     if ( cameras != null) {
+       cp5.get(ScrollableList.class, "Camera List").setItems(cameras);
+       //cp5.getController("Camera List").setItems(l);
     }
   }
 
   public void showGUI() {
     println("REVEALING");
     gui.isShown = true;
-    cp5.get(Textfield.class, "IPText").show();
-    cp5.get(Textfield.class, "Port").show();
-    cp5.get(ScrollableList.class, "cameraList").show();
-    cp5.get(Slider.class, "Smoothing").show();
-    cp5.get(Toggle.class, "Smoothing_Toggle").show();
+    cp5.get(Textfield.class, "IPText").setVisible(true);
+    cp5.get(Textfield.class, "Port").setVisible(true);
+    cp5.get(ScrollableList.class, "Camera List").setVisible(true);
   }
 
   public void hideGUI() {
     println("DISSOLVING");
     this.isShown = false;
-    cp5.get(Textfield.class, "IPText").hide();
-    cp5.get(Textfield.class, "Port").hide();
-    cp5.get(ScrollableList.class, "cameraList").hide();
-    cp5.get(Slider.class, "Smoothing").hide();
-    cp5.get(Toggle.class, "Smoothing_Toggle").hide();
+    cp5.get(Textfield.class, "IPText").setVisible(false);
+    cp5.get(Textfield.class, "Port").setVisible(false);
+    cp5.get(ScrollableList.class, "Camera List").setVisible(false);
   }
 
 
 
   public String[] checkCameraList() {
+
     cameraTimeout();
     cameras = Capture.list();
     if (cameras.length == 0) {
@@ -131,10 +111,9 @@ public class GUI {
       json.setString("cameraName", "");
     }
     json.setInt("index", camIndex);
+    //userIP = cp5.get(Textfield.class, "IPText").getText();
     json.setString("ip", userIP);
     json.setInt("port", listeningPort);
-    json.setFloat("speed", speed);
-    json.setBoolean("smoothing", wantSmooth);
     saveJSONObject(json, pathToSavedOptions);
   }
 
@@ -145,32 +124,21 @@ public class GUI {
       this.loadedCamera = json.getString("cameraName");
       this.camIndex = json.getInt("index");
       this.listeningPort = json.getInt("port");
-      this.speed = json.getFloat("speed");
-      this.wantSmooth = json.getBoolean("smoothing");
     } 
-    catch(Exception e) {
+    catch(NullPointerException e) {
       this.json = new JSONObject();
       this.userIP = "127.0.0.1";
       this.loadedCamera = "";
       this.camIndex = 0;
-      this.speed = 10;
-      this.wantSmooth = true;
       this.listeningPort = 12000;
     }
-    println("want smotthing " + wantSmooth);
   }
 
-  public String cameraList(int n) {
+  public void cameraList(int n) {
     println("User has chosen camera: " + cameras[n]);
     CColor c = new CColor();
-    CColor c2 = new CColor();
-    c.setBackground(#2596DC);
-    c2.setBackground(color(255, 0, 0));
-
-    sb.getItem(camIndex).put("color", c);
-    camIndex = n;
-    sb.getItem(n).put("color", c2);
-    return cameras[n];
+    c.setBackground(color(255, 0, 0));
+    cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c);
   }
 
   public String getUserIP() {
@@ -198,27 +166,9 @@ public class GUI {
     saveJSON(this.cameras);
   }
 
-  public void setListeningPort(int newPort) {
+  public void setListeningPort(String newPort) {
     println("User entered port: " + newPort);
-    listeningPort = newPort;
-    saveJSON(this.cameras);
-  }
-
-  public void setSmoothing(float smoothSpeed) {
-    println("Changed top speed to: " + smoothSpeed);
-    for (Mover m : sources) {
-      m.setTopSpeed(smoothSpeed);
-      speed = smoothSpeed;
-    }
-    saveJSON(this.cameras);
-  }
-  
-  public void setSmoothFlag(boolean flag){
-   println("Saved smooth flag to: " + flag);
-   for (Mover m : sources) {
-      m.setSmoothFlag(flag);
-      this.wantSmooth = flag;;
-    }
+    listeningPort = Integer.parseInt(newPort);
     saveJSON(this.cameras);
   }
 
