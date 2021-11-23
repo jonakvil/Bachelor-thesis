@@ -1,7 +1,7 @@
 {
   "/interpolate": {"value": 1},
   "/cameraList": {"value": 1},
-  "/currentCamName": {"text": "c922 Pro Stream Webcam"},
+  "/currentCamName": {"text": "3D USB Camera"},
   "/listeningPort": {"text": "12000"},
   "/maxspeed": {
     "min": 1,

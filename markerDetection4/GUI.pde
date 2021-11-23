@@ -118,18 +118,22 @@ void cameraTimeout() {
 }
 
 void cameraList(int n) {
-  println("User has chosen camera: " + cameras[n]);
+  println("previously used camera: "+currentCamName+", chosen camera: "+cameras[n]);
 
-  if (!cameras[n].equals(currentCamName)) { //in case use selected camera that was not previously used
+  if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
+    camIndex = n; //save selected camera index
     cam.stop(); //stop the current camera capture
     //println("index: " + camIndex);
     cam = new Capture(this, cameras[camIndex]); //create new camera capture
     //currentCamName( cameras[camIndex] ) ; //save current camera name to variable
     cp5.get(Textfield.class, "currentCamName").setValue( cameras[camIndex] ); //save variable into input field
+    currentCamName = cameras[camIndex];
     //println("curr cam set to "+cp5.get(Textfield.class, "currentCamName").getText() );
+
+    //note that his might lead to program error if the gstreamer encounter some fatal problem such as internal data stream error
     cam.start();//start camera capture
-    camIndex = n; //save selected camera index
-    saveProperties();
+
+    saveProperties(); //on every change, save current state into settings.json file in data folder
   } else {
     println("selected camera already in use");
   }

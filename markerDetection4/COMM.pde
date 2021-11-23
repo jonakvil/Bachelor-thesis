@@ -12,7 +12,7 @@ public class COMM {
   }
 
   public void send(int i, PVector vec) {
-    println("i: " + i + " normalized x/y/z: " + vec.x/window_x + " " + vec.y/window_y + " " + vec.z);
+    //println("i: " + i + " normalized x/y/z: " + vec.x/window_x + " " + vec.y/window_y + " " + vec.z);
     //not normalized, just set to be in <0.0;1.0> screen coords
     myMessage = new OscMessage("/markersCoord");
     myMessage.add(i);

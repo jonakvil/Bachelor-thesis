@@ -23,7 +23,7 @@ void setup() {
   surface.setTitle("Marker detection");
 
   println(MultiMarker.VERSION);
-  
+
   initGUI();
 
   buf = new CircularBuffer(20);
@@ -48,7 +48,8 @@ void setup() {
     cam = new Capture(this, cameras[camIndex]);
     currentCamName = cameras[camIndex];
     isSetuped = true;
-    cam.start();
+    //start camera capture
+    cam.start(); //note that his might lead to program error if the gstreamer encounter some fatal problem such as internal data stream error
   }
 }
 

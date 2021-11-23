@@ -47,24 +47,16 @@ class Mover {
   }
 
   void update() {
-    // Compute a vector that points from location to mouse
-    //PVector mouse = newtarget; //new PVector(mouseX, mouseY);
-
     PVector acceleration = PVector.sub(newtarget, location);
     fill(color(255, 0, 0));
     ellipse(newtarget.x, newtarget.y, 30, 30);
-
-    PVector normNewTarget = new PVector(newtarget.x/640, newtarget.y/480);
-    PVector normLocation = new PVector(location.x/640, location.y/480);
-    float normDist = normNewTarget.dist(normLocation);
-    println("norm dist: " + normDist);
 
     if (newtarget.dist(location) < jumpOffset) {
       location = newtarget;
       display();
       return;
     }
-    // Velocity changes according to acceleration
+    //Velocity changes according to acceleration
     //velocity.add(acceleration);
     velocity = acceleration;
     // Limit the velocity by topspeed
