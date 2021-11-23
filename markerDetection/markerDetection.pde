@@ -123,6 +123,7 @@ void draw()
     countFPS();
   }
 
+  text("press m to hide / show menu", 50, 50 );
   if (gui.isShown) {
     cp5.draw();
   }
