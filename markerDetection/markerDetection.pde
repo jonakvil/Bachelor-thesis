@@ -64,6 +64,10 @@ void setup() {
 
 void draw()
 {
+  if (gui.isShown) {
+    background(0);
+    return;
+  }
   if (!isSetuped) {
     if ((cameras = gui.checkCameraList()) != null) {
       isSetuped = true;
@@ -90,7 +94,7 @@ void draw()
         }  
 
         if ( !idmatch ) {
-          sources.add( new Mover(i, nya.getMarkerVertex2D(i)  ) ); //create new one
+          sources.add(new Mover(i, nya.getMarkerVertex2D(i), gui.speed, gui.wantSmooth)); //create new one
         }
 
         //vecOfMarkers[i] = drawPoint(nya.getMarkerVertex2D(i));
@@ -108,7 +112,6 @@ void draw()
       }
     }
     sources = updatedList; //discard old and dead particles
-
     countFPS();
   }
 }
@@ -155,6 +158,14 @@ public void IPText(String ip) {
 
 public void Port(int portNum) {
   gui.setListeningPort(portNum);
+}
+
+public void Smoothing(float smoothSpeed) {
+  gui.setSmoothing(smoothSpeed);
+}
+
+public void Smoothing_Toggle(boolean flag){
+  gui.setSmoothFlag(flag); 
 }
 
 void cameraList(int n) {

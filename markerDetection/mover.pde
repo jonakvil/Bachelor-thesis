@@ -11,17 +11,19 @@ class Mover {
   float markerSize;
   PVector[] corners;
   long lastupdate = 0;
+  private boolean wantSmooth;
   int jumpOffset = 3;
   PVector newtarget; //last detected marker position
   color col;
 
-  Mover(int currid, PVector[] currcorners) {
+  Mover(int currid, PVector[] currcorners, float speed, boolean smoothing) {
     id = currid;
     corners = currcorners;
     location = getCentroid(corners);
     newtarget = location;
     velocity = new PVector(0, 0);
-    topspeed = 10;
+    topspeed = speed;
+    wantSmooth = smoothing;
     lastupdate = millis();
     col = color( int(random(0, 255)), int(random(0, 255)), int(random(0, 255)), 150 );
   }
@@ -42,13 +44,26 @@ class Mover {
   float getMarkerSize(PVector[] cors) {
     float sum = 0;
     sum = cors[0].dist(cors[1]);
-    println("distance: " + sum);
+    //println("distance: " + sum);
     return sum;
+  }
+  
+  public void setTopSpeed(float smoothSpeed){
+   topspeed = smoothSpeed; 
+  }
+  
+  public void setSmoothFlag(boolean flag){
+   wantSmooth = flag; 
   }
 
   void update() {  
     // Compute a vector that points from location to mouse
     //PVector mouse = newtarget; //new PVector(mouseX, mouseY);
+    if(!wantSmooth){
+      location = newtarget;
+     display();
+     return;
+    }
 
     PVector acceleration = PVector.sub(newtarget, location);
     fill(color(255, 0, 0));
@@ -57,7 +72,7 @@ class Mover {
     PVector normNewTarget = new PVector(newtarget.x/640, newtarget.y/480);
     PVector normLocation = new PVector(location.x/640, location.y/480);
     float normDist = normNewTarget.dist(normLocation);
-    println("norm dist: " + normDist);
+    //println("norm dist: " + normDist);
 
     if (newtarget.dist(location) < jumpOffset) {
       location = newtarget;
@@ -66,17 +81,17 @@ class Mover {
     } else {
 
       // Set magnitude of acceleration
-      //acceleration.setMag(1 + 2*(normDist*20));
+      acceleration.setMag(1 + 2*(normDist*100));
     }
     // Velocity changes according to acceleration
-    //velocity.add(acceleration);
     velocity = acceleration;
     // Limit the velocity by topspeed
+    if(topspeed < 0.1){
+      topspeed = 0.1;
+    }
     velocity.limit(topspeed);
     // Location changes by velocity
     location.add(velocity);
-
-    //topspeed = 10;
     display();
   }
 
