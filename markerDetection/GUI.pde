@@ -19,11 +19,10 @@ public class GUI {
   boolean isShown;
   ScrollableList sb;
 
-
-
   public GUI(ControlP5 cp5, ScrollableList sb) {
     this.cp5 = cp5;
-    this.isShown = false;
+    cp5.setAutoDraw(false);
+    this.isShown = true;
     this.sb = sb;
     loadJSON();
   }
@@ -65,24 +64,8 @@ public class GUI {
   }
 
   public void showGUI() {
-    println("REVEALING");
-    gui.isShown = true;
-    cp5.get(Toggle.class, "smooth").show();
-    cp5.get(Textfield.class, "IPText").show();
-    cp5.get(Textfield.class, "Port").show();
-    cp5.get(ScrollableList.class, "cameraList").show();
+    gui.isShown = !gui.isShown;
   }
-
-  public void hideGUI() {
-    println("DISSOLVING");
-    this.isShown = false;
-    cp5.get(Toggle.class, "smooth").hide();
-    cp5.get(Textfield.class, "IPText").hide();
-    cp5.get(Textfield.class, "Port").hide();
-    cp5.get(ScrollableList.class, "cameraList").hide();
-  }
-
-
 
   public String[] checkCameraList() {
     cameraTimeout();

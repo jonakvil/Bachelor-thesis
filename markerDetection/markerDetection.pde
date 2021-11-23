@@ -60,7 +60,6 @@ void setup() {
     cam.start();
   }
   gui.initGUI();
-  gui.hideGUI();
   gui.saveJSON(cameras);
 }
 
@@ -119,6 +118,10 @@ void draw()
     sources = updatedList; //discard old and dead particles
     countFPS();
   }
+
+  if (gui.isShown) {
+    cp5.draw();
+  }
 }
 
 public void controlEvent(CallbackEvent theEvent) {
@@ -139,16 +142,7 @@ public void keyPressed() {
 public void keyHandler() {
   switch(key) {
   case 'm':
-    if (key == 'm') {
-      if (!gui.isShown)
-      {
-        gui.showGUI();
-        isSetuped = false;
-      } else {
-        gui.hideGUI();
-        isSetuped = true;
-      }
-    }
+    gui.showGUI();
     break;
   }
 }
