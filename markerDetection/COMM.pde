@@ -26,14 +26,14 @@ public class COMM {
     println("### received pattern: " + theOscMessage.addrPattern());
   }
 
-  public void send(int i, PVector[] vec) {
-    println("i: " + i + " normalized x/y/z: " + vec[i].x/window_x + " " + vec[i].y/window_y + " " + vec[i].z); 
-        //not normalized, just set to be in <0.0;1.0> screen coords
+  public void send(int i, PVector vec) {
+    println("i: " + i + " normalized x/y/z: " + vec.x/window_x + " " + vec.y/window_y + " " + vec.z); 
+    //not normalized, just set to be in <0.0;1.0> screen coords
     myMessage = new OscMessage("/markersCoord");
     myMessage.add(i);
-    myMessage.add(vec[i].x/window_x);
-    myMessage.add(vec[i].y/window_y);
-    myMessage.add(vec[i].z);
+    myMessage.add(vec.x/window_x);
+    myMessage.add(vec.y/window_y);
+    myMessage.add(vec.z);
     this.oscP5.send(myMessage, myRemoteLocation);
   }
 }
