@@ -66,7 +66,7 @@ class Mover {
     } else {
 
       // Set magnitude of acceleration
-      acceleration.setMag(1 + 2*(normDist*20));
+      //acceleration.setMag(1 + 2*(normDist*20));
     }
     // Velocity changes according to acceleration
     //velocity.add(acceleration);
@@ -76,7 +76,7 @@ class Mover {
     // Location changes by velocity
     location.add(velocity);
 
-    topspeed = 10;
+    //topspeed = 10;
     display();
   }
 
