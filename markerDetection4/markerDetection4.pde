@@ -20,10 +20,10 @@ boolean interpolate = true; //whether to interpolate values between marker detec
 void setup() {
   //Basic setting
   size(640, 480, P3D);
+  surface.setTitle("Marker detection");
+
   println(MultiMarker.VERSION);
-
-
-
+  
   initGUI();
 
   buf = new CircularBuffer(20);
@@ -125,10 +125,11 @@ public void keyPressed() {
   }
 }
 
+//display current fps in the window title bar
 void countFPS() {
   if (frameCount%30 == 0) {
     buf.insert(round(frameRate));
-    surface.setTitle("fps: " + round(frameRate) +
-      " avg: " + buf.getAvg());
+    surface.setTitle("Marker detection fps: " + round(frameRate) +
+      " avg: " + buf.getAvg()+1 );
   }
 }
