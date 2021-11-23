@@ -21,10 +21,10 @@ public class GUI {
   boolean isShown;
   ScrollableList sb;
 
-
   public GUI(ControlP5 cp5, ScrollableList sb) {
     this.cp5 = cp5;
-    this.isShown = false;
+    cp5.setAutoDraw(false);
+    this.isShown = true;
     this.sb = sb;
     loadJSON();
   }
@@ -68,6 +68,13 @@ public class GUI {
       c.setBackground(color(255, 0, 0));
       sb.getItem(camIndex).put("color", c);
     }
+    // create a toggle for turn on/off smoothing for movement tracking
+    cp5.addToggle("smooth")
+      .setPosition(50, 250)
+      .setSize(50, 20)
+      .setValue(smooth)
+      .setMode(ControlP5.SWITCH)
+      ;
   }
 
   public void showGUI() {
@@ -89,8 +96,6 @@ public class GUI {
     cp5.get(Slider.class, "Smoothing").hide();
     cp5.get(Toggle.class, "Smoothing_Toggle").hide();
   }
-
-
 
   public String[] checkCameraList() {
     cameraTimeout();
