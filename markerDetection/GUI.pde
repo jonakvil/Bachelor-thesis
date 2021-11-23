@@ -13,7 +13,7 @@ public class GUI {
   String userIP;
   String loadedCamera;
   int camIndex;
-  
+
   Integer listeningPort;
   String cameras[];
   boolean isShown;
@@ -55,11 +55,19 @@ public class GUI {
       c.setBackground(color(255, 0, 0));
       sb.getItem(camIndex).put("color", c);
     }
+    // create a toggle for turn on/off smoothing for movement tracking
+    cp5.addToggle("smooth")
+      .setPosition(40, 250)
+      .setSize(50, 20)
+      .setValue(smooth)
+      .setMode(ControlP5.SWITCH)
+      ;
   }
 
   public void showGUI() {
     println("REVEALING");
     gui.isShown = true;
+    cp5.get(Toggle.class, "smooth").show();
     cp5.get(Textfield.class, "IPText").show();
     cp5.get(Textfield.class, "Port").show();
     cp5.get(ScrollableList.class, "cameraList").show();
@@ -68,6 +76,7 @@ public class GUI {
   public void hideGUI() {
     println("DISSOLVING");
     this.isShown = false;
+    cp5.get(Toggle.class, "smooth").hide();
     cp5.get(Textfield.class, "IPText").hide();
     cp5.get(Textfield.class, "Port").hide();
     cp5.get(ScrollableList.class, "cameraList").hide();
@@ -127,7 +136,7 @@ public class GUI {
       this.loadedCamera = json.getString("cameraName");
       this.camIndex = json.getInt("index");
       this.listeningPort = json.getInt("port");
-    } 
+    }
     catch(NullPointerException e) {
       this.json = new JSONObject();
       this.userIP = "127.0.0.1";
