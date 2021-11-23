@@ -10,6 +10,8 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 * let user choose the acceleration of the markers used for movement smoothing - general settings or per marker settings?
 * create builds for all major platforms - win, macos, linux
 * create video demo
+* port to raspberry pi - add camera exposore control
+* enable for sifferent type of markers and let user control the max number of markers tracked
 
 ## Download
 * [MacOS](https://)
