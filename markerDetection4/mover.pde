@@ -22,7 +22,7 @@ class Mover {
     location = getCentroid(corners);
     newtarget = location;
     velocity = new PVector(0, 0);
-    topspeed = 10;
+    topspeed = maxspeed;
     lastupdate = millis();
     col = color( int(random(0, 255)), int(random(0, 255)), int(random(0, 255)), 150 );
   }
@@ -52,11 +52,21 @@ class Mover {
     fill(color(255, 0, 0));
     ellipse(newtarget.x, newtarget.y, 30, 30);
 
+//println(cam.width);
+
+    PVector normNewTarget = new PVector(newtarget.x/cam.width, newtarget.y/cam.height);
+    PVector normLocation = new PVector(location.x/640, location.y/480);
+    float normDist = normNewTarget.dist(normLocation);
+
     if (newtarget.dist(location) < jumpOffset) {
       location = newtarget;
       display();
       return;
     }
+
+    // Set magnitude of acceleration
+    acceleration.setMag(1+normDist*100);
+
     //Velocity changes according to acceleration
     //velocity.add(acceleration);
     velocity = acceleration;

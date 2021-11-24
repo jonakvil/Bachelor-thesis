@@ -1,6 +1,12 @@
 //send tracking data to remote address via websocket & OSC - open sound protocol
 import oscP5.*;
 import netP5.*;
+import websockets.*;
+WebsocketServer ws;
+
+void initWebsocket() {
+  ws = new WebsocketServer(this, 8081, "/markersCoord");
+}
 
 public class COMM {
   OscP5 oscP5;
@@ -10,6 +16,7 @@ public class COMM {
   public COMM() {
     this.oscP5 = new OscP5(this, listeningPort);
     myRemoteLocation = new NetAddress(inputIP, listeningPort);
+    initWebsocket();    
   }
 
   public void send(int i, PVector vec) {
@@ -21,6 +28,8 @@ public class COMM {
     myMessage.add(vec.y/window_y);
     myMessage.add(vec.z);
     this.oscP5.send(myMessage, myRemoteLocation);
+    
+    ws.sendMessage(i+":"+vec.x/cam.width+":"+vec.y/cam.height); //send websocket
   }
 }
 

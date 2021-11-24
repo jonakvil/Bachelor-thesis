@@ -80,8 +80,8 @@ public void initGUI() {
 
   cameras = checkCameraList(); //get avaliable cameras into variable
 
-  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
   cp5.setBroadcast(true);
+  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
 }
 
 //Callback listener for mouse hover events
@@ -122,14 +122,14 @@ void cameraTimeout() {
 
 void cameraList(int n) {
   println("previously used camera: "+currentCamName+" -- "+camIndex+", chosen camera: "+cameras[n]+" -- "+n);
-/*
+  /*
   //does not work - probably some bug in underlying library?
-  CColor c = new CColor();
-  c.setBackground(#2596DC);
-
-  sb.getItem(camIndex).put("color", colHighlight);
-  sb.getItem(n).put("color", colHighlight );
-*/
+   CColor c = new CColor();
+   c.setBackground(#2596DC);
+   
+   sb.getItem(camIndex).put("color", colHighlight);
+   sb.getItem(n).put("color", colHighlight );
+   */
 
   if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
     camIndex = n; //save selected camera index
@@ -185,6 +185,7 @@ void listeningPort(String currPort) {
 }
 //set maximum acceleration for movement interpolation - essentially max speed ----------------
 void maxspeed(float val) {
+  println("mas xpeed fce triggered");
   maxspeed = val;
   for (Mover m : sources) {
     m.topspeed = val;
