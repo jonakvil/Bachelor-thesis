@@ -9,6 +9,7 @@ class Mover {
   PVector acceleration;
   // The Mover's maximum speed
   float topspeed;
+  int delay;
   float markerSize;
   PVector[] corners;
   long lastupdate = 0;
@@ -22,7 +23,10 @@ class Mover {
     location = getCentroid(corners);
     newtarget = location;
     velocity = new PVector(0, 0);
-    topspeed = 10;
+    topspeed = maxspeed;
+    delay = delayG;
+    println("delay is: " + delay);
+    println("max speed is: " + topspeed);
     lastupdate = millis();
     col = color( int(random(0, 255)), int(random(0, 255)), int(random(0, 255)), 150 );
   }
@@ -49,6 +53,9 @@ class Mover {
 
   void update() {
     PVector acceleration = PVector.sub(newtarget, location);
+    PVector normNewTarget = new PVector(newtarget.x/cam.height, newtarget.y/cam.width);
+    PVector normLocation = new PVector(location.x/cam.height, location.y/cam.width);
+    float normDist = normNewTarget.dist(normLocation);
     fill(color(255, 0, 0));
     ellipse(newtarget.x, newtarget.y, 30, 30);
 
@@ -56,6 +63,11 @@ class Mover {
       location = newtarget;
       display();
       return;
+    }else{
+       acceleration.setMag(1 + 2*(normDist*10));
+    }
+    if(topspeed < 1){
+     topspeed = 1; 
     }
     //Velocity changes according to acceleration
     //velocity.add(acceleration);

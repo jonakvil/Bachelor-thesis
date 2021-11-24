@@ -17,6 +17,7 @@ Integer listeningPort = 12000;
 String cameras[];
 boolean renderGUI = true; //on first run always show GUI
 float maxspeed = 10;
+int delayG = 1000;
 ScrollableList sb;
 
 CColor colHighlight = new CColor();
@@ -44,11 +45,18 @@ public void initGUI() {
   }
   // create a toggle for turn on/off interpolateing for movement tracking
   cp5.addToggle("interpolate")
-    .setPosition(50, 270)
+    .setPosition(50, 240)
     .setSize(50, 20)
     .setValue(interpolate)
     .setMode(ControlP5.SWITCH)
     ;
+  //create slider to adjust the delay after not-detected markers will disappear
+  cp5.addSlider("delayG")
+    .setPosition(50, 280)
+    .setSize(200, 20)
+    .setLabel("delay time")
+    .setRange(1, 5000)
+    .setValue(delayG);
   //create slider to set max acceleration used for interpolateing
   cp5.addSlider("maxspeed")
     .setPosition(50, 320)
@@ -58,6 +66,7 @@ public void initGUI() {
     .setValue(maxspeed);
   cp5.getController("maxspeed").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
   cp5.getController("maxspeed").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+
   //create port input field
   cp5.addTextfield("listeningPort")
     .setPosition(50, 360)
@@ -80,8 +89,9 @@ public void initGUI() {
 
   cameras = checkCameraList(); //get avaliable cameras into variable
 
-  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
   cp5.setBroadcast(true);
+  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
+
 }
 
 //Callback listener for mouse hover events
@@ -122,14 +132,14 @@ void cameraTimeout() {
 
 void cameraList(int n) {
   println("previously used camera: "+currentCamName+" -- "+camIndex+", chosen camera: "+cameras[n]+" -- "+n);
-/*
+  /*
   //does not work - probably some bug in underlying library?
-  CColor c = new CColor();
-  c.setBackground(#2596DC);
-
-  sb.getItem(camIndex).put("color", colHighlight);
-  sb.getItem(n).put("color", colHighlight );
-*/
+   CColor c = new CColor();
+   c.setBackground(#2596DC);
+   
+   sb.getItem(camIndex).put("color", colHighlight);
+   sb.getItem(n).put("color", colHighlight );
+   */
 
   if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
     camIndex = n; //save selected camera index
@@ -191,6 +201,16 @@ void maxspeed(float val) {
   }
   saveProperties();
 }
+
+//set the delay after which the not-detected markers will disappear
+void delayG(int d) {
+  delayG = d; 
+  for (Mover m : sources) {
+    m.delay = d;
+  }
+  saveProperties();
+}
+
 //tun on or off interpolating position of tracked markers--------
 void interpolate(boolean val) {
   interpolate = val;

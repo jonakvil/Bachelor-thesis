@@ -115,7 +115,7 @@ void draw()
       if (interpolate) {
         comm.send(cid, sources.get(cid).location );
       }
-      if ( sources.get(cid).lastupdate > millis()-1000 ) {
+      if ( sources.get(cid).lastupdate > millis()-delayG) {
         updatedList.add( sources.get(cid) );
       } else {
         println("marker "+sources.get(cid).id+" lost");
