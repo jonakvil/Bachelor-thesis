@@ -1,13 +1,13 @@
 /*
 Fiducial marker detection and data sender with GUI
-made by Vilém Jonák under supervision by Vojtech Leischner 2021
-Czech Technical University in Prague
-Faculty of Electrical Engineering
-Department of Computer Graphics and Interaction
-https://dcgi.fel.cvut.cz/
-This software uses NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md 
-Everything else is released under an MIT license - you can use, modify and distribute.
-*/
+ made by Vilém Jonák under supervision by Vojtech Leischner 2021
+ Czech Technical University in Prague
+ Faculty of Electrical Engineering
+ Department of Computer Graphics and Interaction
+ https://dcgi.fel.cvut.cz/
+ This software uses NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md
+ Everything else is released under an MIT license - you can use, modify and distribute.
+ */
 
 import processing.video.*;
 import jp.nyatla.nyar4psg.*;
@@ -39,12 +39,12 @@ void setup() {
 
   buf = new CircularBuffer(20);
   comm = new COMM();
-  
+
   //load camera configuration -essentially camera calibration file - we are using a general one but you can create custom one as well
   //http://www.hitl.washington.edu/artoolkit/documentation/usercalibration.htm
   //please refer to  utility programs included with ARToolKit to calibrate your video camera if you want to achieve more precise results
-  nya=new MultiMarker(this, width, height, "camera_para.dat", NyAR4PsgConfig.CONFIG_PSG);
-  
+  nya=new MultiMarker(this, width, height, dataPath("camera_para.dat"), NyAR4PsgConfig.CONFIG_PSG);
+
   for (int i = 0; i < markersNum; i++) {
     nya.addNyIdMarker(i, 80);
   }
