@@ -1,3 +1,4 @@
+//Graphical user interface
 import controlP5.*;
 import processing.video.*;
 import jp.nyatla.nyar4psg.*;
@@ -6,232 +7,213 @@ import netP5.*;
 import java.util.*;
 import processing.video.*;
 
-public class GUI {
-  ControlP5 cp5;
-  JSONObject json;
-  String pathToSavedOptions = "data/options.json";
-  String userIP;
-  String loadedCamera;
-  float speed;
-  boolean wantSmooth;
-  int camIndex;
 
-  Integer listeningPort;
-  String cameras[];
-  boolean isShown;
-  ScrollableList sb;
+ControlP5 cp5;
+String inputIP = "127.0.0.1";
+String loadedCamera = "";
+String currentCamName = "none";
+int camIndex = 0;
+Integer listeningPort = 12000;
+String cameras[];
+boolean renderGUI = true; //on first run always show GUI
+float maxspeed = 10;
+ScrollableList sb;
 
-  public GUI(ControlP5 cp5, ScrollableList sb) {
-    this.cp5 = cp5;
-    cp5.setAutoDraw(false);
-    this.isShown = true;
-    this.sb = sb;
-    loadJSON();
+CColor colHighlight = new CColor();
+
+public void initGUI() {
+  cp5 = new ControlP5(this);
+  cp5.setBroadcast(false);
+  cp5.setAutoDraw(false); //turn off automatic rendering - we want to control this manully inside main draw() fce
+
+  colHighlight.setBackground(color(255, 0, 0));
+
+  //create dropdown list of avaliable cameras for capture - let user select the right one
+  sb = cp5.addScrollableList("cameraList")
+    .setPosition(50, 100)
+    .setSize(200, 100)
+    .setBarHeight(20)
+    .setItemHeight(20)
+    //.setColorBackground(#2596DC)
+    .onEnter(toFront) //callback on mouse hover
+    .onLeave(close) //callback on mouse hover
+    .setValue(camIndex);
+  if (cameras != null) { //in case there are cameras avaliable include them in the list
+    cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
+    sb.getItem(camIndex).put("color", colHighlight);
   }
+  // create a toggle for turn on/off interpolateing for movement tracking
+  cp5.addToggle("interpolate")
+    .setPosition(50, 270)
+    .setSize(50, 20)
+    .setValue(interpolate)
+    .setMode(ControlP5.SWITCH)
+    ;
+  //create slider to set max acceleration used for interpolateing
+  cp5.addSlider("maxspeed")
+    .setPosition(50, 320)
+    .setLabel("max speed")
+    .setSize(200, 20)
+    .setRange(1, 50)
+    .setValue(maxspeed);
+  cp5.getController("maxspeed").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+  cp5.getController("maxspeed").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+  //create port input field
+  cp5.addTextfield("listeningPort")
+    .setPosition(50, 360)
+    .setSize(200, 20)
+    .setText(listeningPort.toString())
+    .setLabel("The listening port")
+    .setColorBackground(#2596DC)
+    .setInputFilter(ControlP5.INTEGER);
+  //create remote IP adress field - used for Websockets
+  cp5.addTextfield("inputIP")
+    .setPosition(50, 400)
+    .setSize(200, 20)
+    .setText(inputIP)
+    .setColorBackground(#2596DC)
+    .setLabel("Insert IP address of destination");
+  //this controller is never shown to user - only serves to save the selected camera name
+  cp5.addTextfield("currentCamName")
+    .setValue(currentCamName)
+    .hide();
 
-  public void initGUI() {
-    cp5.addTextfield("IPText")
-      .setPosition(50, 400)
-      .setSize(200, 20)
-      .setText(userIP)
-      .setColorBackground(#2596DC)
-      .setLabel("Insert IP address of destination");
-    cp5.addTextfield("Port")
-      .setPosition(50, 360)
-      .setSize(200, 20)
-      .setText(listeningPort.toString())
-      .setLabel("The listening port")
-      .setColorBackground(#2596DC)
-      .setInputFilter(ControlP5.INTEGER);
-    sb = cp5.addScrollableList("cameraList")
-      .setPosition(50, 100)
-      .setSize(200, 100)
-      .setBarHeight(20)
-      .setItemHeight(20)
-      .setColorBackground(#2596DC)
-      .setValue(camIndex);
-    cp5.addToggle("Smoothing_Toggle")
-      .setPosition(100, 200)
-      .setSize(50, 20)
-      .setValue(wantSmooth);
-    cp5.addSlider("Smoothing")
-      .setPosition(400, 400)
-      .setSize(200, 20)
-      .setRange(0, 50)
-      .setValue(speed);
-    cp5.getController("Smoothing").getValueLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
-    cp5.getController("Smoothing").getCaptionLabel().align(ControlP5.RIGHT, ControlP5.BOTTOM_OUTSIDE).setPaddingX(0);
+  cameras = checkCameraList(); //get avaliable cameras into variable
 
-    if (cameras != null) {
-      cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
-      CColor c = new CColor();
-      c.setBackground(color(255, 0, 0));
-      sb.getItem(camIndex).put("color", c);
+  loadProperties(); //load previous settings if they exists - file settings.json inside data folder
+  cp5.setBroadcast(true);
+}
+
+//Callback listener for mouse hover events
+CallbackListener toFront = new CallbackListener() {
+  public void controlEvent(CallbackEvent theEvent) {
+    theEvent.getController().bringToFront();
+    ((ScrollableList)theEvent.getController()).open();
+    //in case of avaliable cameras menu also check for new or removed camera devices - update accroding to current state
+    if (theEvent.getController().equals(sb)) {
+      checkCameraList();
     }
-    // create a toggle for turn on/off smoothing for movement tracking
-    cp5.addToggle("smooth")
-      .setPosition(50, 250)
-      .setSize(50, 20)
-      .setValue(smooth)
-      .setMode(ControlP5.SWITCH)
-      ;
   }
-
-  public void showGUI() {
-    println("REVEALING");
-    gui.isShown = true;
-    cp5.get(Textfield.class, "IPText").show();
-    cp5.get(Textfield.class, "Port").show();
-    cp5.get(ScrollableList.class, "cameraList").show();
-    cp5.get(Slider.class, "Smoothing").show();
-    cp5.get(Toggle.class, "Smoothing_Toggle").show();
+};
+//Callback listener for mouse hover events
+CallbackListener close = new CallbackListener() {
+  public void controlEvent(CallbackEvent theEvent) {
+    ((ScrollableList)theEvent.getController()).close();
   }
+};
 
-  public void hideGUI() {
-    println("DISSOLVING");
-    this.isShown = false;
-    cp5.get(Textfield.class, "IPText").hide();
-    cp5.get(Textfield.class, "Port").hide();
-    cp5.get(ScrollableList.class, "cameraList").hide();
-    cp5.get(Slider.class, "Smoothing").hide();
-    cp5.get(Toggle.class, "Smoothing_Toggle").hide();
-  }
-
-  public String[] checkCameraList() {
-    cameraTimeout();
-    cameras = Capture.list();
-    if (cameras.length == 0) {
-      println("There are no cameras available for capture.");
-      cameras = null;
-    } else {
-      println("Available cameras:");
-      printArray(cameras);
+void cameraTimeout() {
+  //Waiting 10 seconds for camera list init
+  long timeBeforeCameraWaiting = second();
+  long t = second();
+  println("waiting for cameras");
+  while ( Capture.list().length == 0 ) {
+    if (second() - t > 0) {
+      t= second();
+      print(". ");
     }
-    return cameras;
+    if (second() - timeBeforeCameraWaiting > 1) //wait 5 secs
+    {
+      break;
+    }
   }
+  println();
+}
 
-  public void cameraTimeout() {
-    //Waiting 10 seconds for camera list init
-    long timeBeforeCameraWaiting = second();
-    long t = second();
-    println("waiting for cameras");
-    while ( Capture.list().length == 0 ) {
-      if (second() - t > 0) {
-        t= second();
-        print(". ");
+void cameraList(int n) {
+  println("previously used camera: "+currentCamName+" -- "+camIndex+", chosen camera: "+cameras[n]+" -- "+n);
+/*
+  //does not work - probably some bug in underlying library?
+  CColor c = new CColor();
+  c.setBackground(#2596DC);
+
+  sb.getItem(camIndex).put("color", colHighlight);
+  sb.getItem(n).put("color", colHighlight );
+*/
+
+  if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
+    camIndex = n; //save selected camera index
+    cam.stop(); //stop the current camera capture
+    //println("index: " + camIndex);
+    cam = new Capture(this, cameras[camIndex]); //create new camera capture
+    //currentCamName( cameras[camIndex] ) ; //save current camera name to variable
+    cp5.get(Textfield.class, "currentCamName").setValue( cameras[camIndex] ); //save variable into input field
+    currentCamName = cameras[camIndex];
+    //println("curr cam set to "+cp5.get(Textfield.class, "currentCamName").getText() );
+
+    //note that his might lead to program error if the gstreamer encounter some fatal problem such as internal data stream error
+    cam.start();//start camera capture
+
+    saveProperties(); //on every change, save current state into settings.json file in data folder
+  } else {
+    println("selected camera already in use");
+  }
+}
+
+//get avaliable camera list with camera names------------------------------
+public String[] checkCameraList() {
+  cameras = Capture.list();
+  if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    cameras = null;
+  } else {
+    println("Available cameras:");
+    printArray(cameras);
+  }
+  if (cameras != null) { //in case there are cameras avaliable include them in the list
+    sb.setItems(cameras);
+  }
+  return cameras;
+}
+
+void currentCamName(String val) {
+  currentCamName = val;
+}
+
+//set remote IP for websocket / osc -----------------
+public void inputIP(String newIP) {
+  println("User entered IP: " + newIP);
+  inputIP = newIP;
+  saveProperties();//on every change, save current state into settings.json file in data folder
+}
+//set port ------------------------------
+void listeningPort(String currPort) {
+  int newPort = int(currPort);
+  println("User entered port: " + newPort);
+  listeningPort = newPort;
+  saveProperties();//on every change, save current state into settings.json file in data folder
+}
+//set maximum acceleration for movement interpolation - essentially max speed ----------------
+void maxspeed(float val) {
+  maxspeed = val;
+  for (Mover m : sources) {
+    m.topspeed = val;
+  }
+  saveProperties();
+}
+//tun on or off interpolating position of tracked markers--------
+void interpolate(boolean val) {
+  interpolate = val;
+  saveProperties();
+}
+
+void saveProperties() {
+  cp5.saveProperties(dataPath("settings.json"));
+}
+
+void loadProperties() {
+  try {
+    cp5.loadProperties(dataPath("settings.json")); //save inside data folder
+  }
+  catch (Exception e) {
+    println("There was an error loading settings - probably wrong format. Try to delete the settings file or cahnge some settings now to reset"+e);
+  }
+  if (cameras != null ) {
+    for (int i=0; i<cameras.length; i++) {
+      if ( currentCamName == cameras[i]) {
+        println("match between saved camera and avaliable cameras found");
       }
-      if (second() - timeBeforeCameraWaiting > 1) //wait 5 secs
-      {
-        break;
-      }
     }
-    println();
   }
-
-  public void saveJSON(String[] cameras) {
-    try {
-      json.setString("cameraName", cameras[camIndex]);
-    }
-    catch(NullPointerException e) {
-      json.setString("cameraName", "");
-    }
-    json.setInt("index", camIndex);
-    json.setString("ip", userIP);
-    json.setInt("port", listeningPort);
-    json.setFloat("speed", speed);
-    json.setBoolean("smoothing", wantSmooth);
-    saveJSONObject(json, pathToSavedOptions);
-  }
-
-  public void loadJSON() {
-    try {
-      this.json = loadJSONObject(pathToSavedOptions);
-      this.userIP = json.getString("ip");
-      this.loadedCamera = json.getString("cameraName");
-      this.camIndex = json.getInt("index");
-      this.listeningPort = json.getInt("port");
-      this.speed = json.getFloat("speed");
-      this.wantSmooth = json.getBoolean("smoothing");
-    } 
-    catch(Exception e) {
-      this.json = new JSONObject();
-      this.userIP = "127.0.0.1";
-      this.loadedCamera = "";
-      this.camIndex = 0;
-      this.speed = 10;
-      this.wantSmooth = true;
-      this.listeningPort = 12000;
-    }
-    println("want smotthing " + wantSmooth);
-  }
-
-  public String cameraList(int n) {
-    println("User has chosen camera: " + cameras[n]);
-    CColor c = new CColor();
-    CColor c2 = new CColor();
-    c.setBackground(#2596DC);
-    c2.setBackground(color(255, 0, 0));
-
-    sb.getItem(camIndex).put("color", c);
-    camIndex = n;
-    sb.getItem(n).put("color", c2);
-    return cameras[n];
-  }
-
-  public String getUserIP() {
-    return userIP;
-  }
-  public int getListeningPort() {
-    return listeningPort;
-  }
-
-  public String getLoadedCamera() {
-    return loadedCamera;
-  }
-
-  public int getIndex() {
-    return camIndex;
-  }
-
-  public String [] getCameras() {
-    return cameras;
-  }
-
-  public void setUserIP(String newIP) {
-    println("User entered IP: " + newIP);
-    userIP = newIP;
-    saveJSON(this.cameras);
-  }
-
-  public void setListeningPort(int newPort) {
-    println("User entered port: " + newPort);
-    listeningPort = newPort;
-    saveJSON(this.cameras);
-  }
-
-  public void setSmoothing(float smoothSpeed) {
-    println("Changed top speed to: " + smoothSpeed);
-    for (Mover m : sources) {
-      m.setTopSpeed(smoothSpeed);
-      speed = smoothSpeed;
-    }
-    saveJSON(this.cameras);
-  }
-  
-  public void setSmoothFlag(boolean flag){
-   println("Saved smooth flag to: " + flag);
-   for (Mover m : sources) {
-      m.setSmoothFlag(flag);
-      this.wantSmooth = flag;;
-    }
-    saveJSON(this.cameras);
-  }
-
-  public void setLoadedCamera(String cam) {
-    loadedCamera = cam;
-  }
-
-  public void setCameras(String [] c) {
-    cameras = c;
-  }
+  //cp5.get(Textfield.class, "currentCamName").getText();
 }
