@@ -13,9 +13,9 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 * enable for different type of markers and let user control the max number of markers tracked
 
 ## Download
-* [MacOS](https://)
-* [Windows64bit](https://)
-* [Linux64bit](https://)
+* [Windows64bit](https://mega.nz/file/pBZVxQoS#CQicvcYtOaZTkJv2YbP3XL4akb-QZu1OEyeFXb7_AoM) - version 1.0
+* Coming soon... [MacOS](https://)
+* Coming soon... [Linux64bit](https://)
 
 Download links provide zipped archive with the tool. You don't need to install anything - just unzip it and run executable file.
 
