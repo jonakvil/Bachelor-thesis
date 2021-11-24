@@ -147,6 +147,6 @@ void countFPS() {
   if (frameCount%30 == 0) {
     buf.insert(round(frameRate));
     surface.setTitle("Marker detection fps: " + round(frameRate) +
-      " avg: " + buf.getAvg()+1 );
+      " avg: " + buf.getAvg() );
   }
 }
