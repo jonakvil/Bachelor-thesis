@@ -19,10 +19,15 @@ boolean renderGUI = true; //on first run always show GUI
 float maxspeed = 10;
 ScrollableList sb;
 
+CColor colHighlight = new CColor();
+
 public void initGUI() {
   cp5 = new ControlP5(this);
   cp5.setBroadcast(false);
   cp5.setAutoDraw(false); //turn off automatic rendering - we want to control this manully inside main draw() fce
+
+  colHighlight.setBackground(color(255, 0, 0));
+
   //create dropdown list of avaliable cameras for capture - let user select the right one
   sb = cp5.addScrollableList("cameraList")
     .setPosition(50, 100)
@@ -35,9 +40,7 @@ public void initGUI() {
     .setValue(camIndex);
   if (cameras != null) { //in case there are cameras avaliable include them in the list
     cp5.get(ScrollableList.class, "cameraList").addItems(cameras);
-    CColor c = new CColor();
-    c.setBackground(color(255, 0, 0));
-    sb.getItem(camIndex).put("color", c);
+    sb.getItem(camIndex).put("color", colHighlight);
   }
   // create a toggle for turn on/off interpolateing for movement tracking
   cp5.addToggle("interpolate")
@@ -120,14 +123,13 @@ void cameraTimeout() {
 void cameraList(int n) {
   println("previously used camera: "+currentCamName+" -- "+camIndex+", chosen camera: "+cameras[n]+" -- "+n);
 /*
+  //does not work - probably some bug in underlying library?
   CColor c = new CColor();
-  CColor c2 = new CColor();
   c.setBackground(#2596DC);
-  c2.setBackground(color(255, 0, 0));
-  sb.getItem(camIndex).put("color", c);
-  sb.getItem(n).put("color", c2 );
+
+  sb.getItem(camIndex).put("color", colHighlight);
+  sb.getItem(n).put("color", colHighlight );
 */
-  cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c2 );
 
   if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
     camIndex = n; //save selected camera index
