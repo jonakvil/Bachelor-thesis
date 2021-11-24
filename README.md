@@ -40,7 +40,7 @@ Note that you can also adjust few settings. Click on the "XXXX" tab.
 * other one....
 
 ## How does it work?
-Under the hood the tool is programmed in Java Processing.
+Under the hood the tool is programmed in Java Processing. For marker detection we are using NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md and Control P5 for GUI https://github.com/sojamo/controlp5. For camera capture we rely on Video library based on Gstreamer https://processing.org/reference/libraries/video/index.html.
 
 ## Camera Calibration
 We are using a general camera calibration model but you can create a custom one as well. Simply delete the camera_para.dat file and replace it with your own. Please refer to utility programs included with ARToolKit to calibrate your video camera if you want to achieve more precise results and to export the necessary file. See http://www.hitl.washington.edu/artoolkit/documentation/usercalibration.htm for more.
