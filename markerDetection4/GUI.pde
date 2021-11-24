@@ -29,7 +29,7 @@ public void initGUI() {
     .setSize(200, 100)
     .setBarHeight(20)
     .setItemHeight(20)
-    .setColorBackground(#2596DC)
+    //.setColorBackground(#2596DC)
     .onEnter(toFront) //callback on mouse hover
     .onLeave(close) //callback on mouse hover
     .setValue(camIndex);
@@ -118,7 +118,16 @@ void cameraTimeout() {
 }
 
 void cameraList(int n) {
-  println("previously used camera: "+currentCamName+", chosen camera: "+cameras[n]);
+  println("previously used camera: "+currentCamName+" -- "+camIndex+", chosen camera: "+cameras[n]+" -- "+n);
+/*
+  CColor c = new CColor();
+  CColor c2 = new CColor();
+  c.setBackground(#2596DC);
+  c2.setBackground(color(255, 0, 0));
+  sb.getItem(camIndex).put("color", c);
+  sb.getItem(n).put("color", c2 );
+*/
+  cp5.get(ScrollableList.class, "cameraList").getItem(n).put("color", c2 );
 
   if ( cameras[n].equals(currentCamName) == false ) { //in case use selected camera that was not previously used
     camIndex = n; //save selected camera index

@@ -1,7 +1,7 @@
 {
   "/interpolate": {"value": 1},
-  "/cameraList": {"value": 1},
-  "/currentCamName": {"text": "3D USB Camera"},
+  "/cameraList": {"value": 2},
+  "/currentCamName": {"text": "DroidCam Source 3"},
   "/listeningPort": {"text": "12000"},
   "/maxspeed": {
     "min": 1,

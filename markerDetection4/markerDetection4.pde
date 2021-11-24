@@ -43,13 +43,11 @@ void setup() {
   //load camera configuration -essentially camera calibration file - we are using a general one but you can create custom one as well
   //http://www.hitl.washington.edu/artoolkit/documentation/usercalibration.htm
   //please refer to  utility programs included with ARToolKit to calibrate your video camera if you want to achieve more precise results
-  
   nya=new MultiMarker(this, width, height, "camera_para.dat", NyAR4PsgConfig.CONFIG_PSG);
   
   for (int i = 0; i < markersNum; i++) {
     nya.addNyIdMarker(i, 80);
   }
-
 
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
