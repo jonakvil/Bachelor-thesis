@@ -1,3 +1,4 @@
+//Graphical user interface
 import controlP5.*;
 import processing.video.*;
 import jp.nyatla.nyar4psg.*;
@@ -98,7 +99,6 @@ CallbackListener close = new CallbackListener() {
   }
 };
 
-
 void cameraTimeout() {
   //Waiting 10 seconds for camera list init
   long timeBeforeCameraWaiting = second();
@@ -139,6 +139,7 @@ void cameraList(int n) {
   }
 }
 
+//get avaliable camera list with camera names------------------------------
 public String[] checkCameraList() {
   cameras = Capture.list();
   if (cameras.length == 0) {
@@ -158,20 +159,20 @@ void currentCamName(String val) {
   currentCamName = val;
 }
 
-
+//set remote IP for websocket / osc -----------------
 public void inputIP(String newIP) {
   println("User entered IP: " + newIP);
   inputIP = newIP;
-  saveProperties();
+  saveProperties();//on every change, save current state into settings.json file in data folder
 }
-
+//set port ------------------------------
 void listeningPort(String currPort) {
   int newPort = int(currPort);
   println("User entered port: " + newPort);
   listeningPort = newPort;
-  saveProperties();
+  saveProperties();//on every change, save current state into settings.json file in data folder
 }
-
+//set maximum acceleration for movement interpolation - essentially max speed ----------------
 void maxspeed(float val) {
   maxspeed = val;
   for (Mover m : sources) {
@@ -179,7 +180,7 @@ void maxspeed(float val) {
   }
   saveProperties();
 }
-
+//tun on or off interpolating position of tracked markers--------
 void interpolate(boolean val) {
   interpolate = val;
   saveProperties();
@@ -191,7 +192,7 @@ void saveProperties() {
 
 void loadProperties() {
   try {
-    cp5.loadProperties(dataPath("settings.json"));
+    cp5.loadProperties(dataPath("settings.json")); //save inside data folder
   }
   catch (Exception e) {
     println("There was an error loading settings - probably wrong format. Try to delete the settings file or cahnge some settings now to reset"+e);

@@ -1,3 +1,4 @@
+//send tracking data to remote address via websocket & OSC - open sound protocol
 import oscP5.*;
 import netP5.*;
 

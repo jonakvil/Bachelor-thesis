@@ -1,3 +1,4 @@
+//circular buffer to count averaged fps
 import java.util.*;
 
 public class CircularBuffer {

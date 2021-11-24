@@ -1,3 +1,14 @@
+/*
+Fiducial marker detection and data sender with GUI
+made by Vilém Jonák under supervision by Vojtech Leischner 2021
+Czech Technical University in Prague
+Faculty of Electrical Engineering
+Department of Computer Graphics and Interaction
+https://dcgi.fel.cvut.cz/
+This software uses NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md 
+Everything else is released under an MIT license - you can use, modify and distribute.
+*/
+
 import processing.video.*;
 import jp.nyatla.nyar4psg.*;
 import oscP5.*;
@@ -17,12 +28,12 @@ boolean isSetuped = true;
 int markersNum = 8;
 boolean interpolate = true; //whether to interpolate values between marker detected positions - results in interpolateer movement
 
+//this is run once on the very beggining - initializing all functions and variables
 void setup() {
   //Basic setting
   size(640, 480, P3D);
   surface.setTitle("Marker detection");
-
-  println(MultiMarker.VERSION);
+  println(MultiMarker.VERSION); //print to console information about NYAR Toolkit
 
   initGUI();
 
@@ -53,6 +64,7 @@ void setup() {
   }
 }
 
+//this is run repeatdly on every run - main function
 void draw()
 {
   if (!isSetuped) {
