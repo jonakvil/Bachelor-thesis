@@ -113,7 +113,7 @@ void draw()
       sources.get(cid).update();
       //send every marker id + location to remote including interpolated locations
       if (interpolate) {
-        comm.send(cid, sources.get(cid).location );
+        comm.send(sources.get(cid).id, sources.get(cid).location );
       }
       if ( sources.get(cid).lastupdate > millis()-delayG) {
         updatedList.add( sources.get(cid) );

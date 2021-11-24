@@ -25,8 +25,8 @@ class Mover {
     velocity = new PVector(0, 0);
     topspeed = maxspeed;
     delay = delayG;
-    println("delay is: " + delay);
-    println("max speed is: " + topspeed);
+    //println("delay is: " + delay);
+    //println("max speed is: " + topspeed);
     lastupdate = millis();
     col = color( int(random(0, 255)), int(random(0, 255)), int(random(0, 255)), 150 );
   }
