@@ -46,9 +46,14 @@ void setup() {
   nya=new MultiMarker(this, width, height, dataPath("camera_para.dat"), NyAR4PsgConfig.CONFIG_PSG);
 
   for (int i = 0; i < markersNum; i++) {
-    nya.addNyIdMarker(i, 80);
+    nya.addNyIdMarker(i, 40); //nya.addNyIdMarker(i, 80);
   }
-
+ /* 
+  println( "current threshold for tracking: "+nya.getCurrentThreshold() );  
+  nya.setThreshold(100);
+println( "current threshold for tracking: "+nya.getCurrentThreshold() );
+*/
+// nya.setThreshold(100);
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
     try {
