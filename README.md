@@ -27,16 +27,16 @@ Tested on Big Sur 11.6. On MacOs you need to allow installation from unknown sou
 <img src="./images/allow_camera_macos.jpg" width="257" height="230" />
 
 ### Linux
-Tested on Ubuntu 64bit. You can always run the app from the terminal. If using GUI and the app does not run when you double click the "XXXX" file icon you need to change the settings of your file explorer. In Nautilus file explorer click the hamburger menu (three lines icon next to minimise icon ), select "preferences". Click on "behaviour" tab, in the "Executable Text Files" option select "Run them". Close the dialogue and double click the "XXXXX" file icon (bash script) - now it should start.
+Tested on Ubuntu 64bit. You can always run the app from the terminal. If using GUI and the app does not run when you double click the "markerDetection" file icon you need to change the settings of your file explorer. In Nautilus file explorer click the hamburger menu (three lines icon next to minimise icon ), select "preferences". Click on "behaviour" tab, in the "Executable Text Files" option select "Run them". Close the dialogue and double click the "markerDetection" file icon (bash script) - now it should start.
 
 ## What is this good for?
 
 ## How to use it?
 After unzipping simply double click the executable to run the application. 
 
-Note that you can also adjust few settings. Click on the "XXXX" tab.  
-* some settings - what it does
-* other one....
+Note that you can also adjust few settings.
+* some settings - what it does TBD
+* other one....TBD
 
 ## How does it work?
 Under the hood the tool is programmed in Java Processing. For marker detection we are using NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md and Control P5 for GUI https://github.com/sojamo/controlp5. For camera capture we rely on Video library based on Gstreamer https://processing.org/reference/libraries/video/index.html.
