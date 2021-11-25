@@ -14,8 +14,8 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 ## Download
 * [Windows64bit](https://mega.nz/file/pBZVxQoS#CQicvcYtOaZTkJv2YbP3XL4akb-QZu1OEyeFXb7_AoM) - version 1.0
-* Coming soon... [MacOS](https://)
-* Coming soon... [Linux64bit](https://)
+* [Linux64bit](https://mega.nz/file/tFQVWKoT#WH5LBp3tQRrBptjvUZaxjd0AG1g5zXfEui9OqQN1vr8) - version 1.0
+* * Coming soon... [MacOS](https://)
 
 Download links provide zipped archive with the tool. You don't need to install anything - just unzip it and run executable file.
 
