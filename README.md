@@ -21,10 +21,10 @@ Download links provide zipped archive with the tool. You don't need to install a
 ## Build instructions
 In case you want to use the app without modifying source code you can simply download premade builds - refer to Download chapter above. In case you need to build the app yourself you will need Processing IDE https://processing.org/. You will also need all underlying libraries - to install libraries in Processing IDE click on "sketch" -> "import library" -> "add library". Type names of the dependencies into search box and click install. 
 
-*video
-*osc5
-*Websockets
-*nyar4psg
+* video
+* osc5
+* Websockets
+* nyar4psg
 
 <img src="./images/add_library_processingIDE.jpg" width="540" height="417" />
 
