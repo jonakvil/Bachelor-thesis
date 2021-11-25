@@ -5,9 +5,7 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 <img src="./images/tabletop_schema.jpg" width="375" height="357" />
 
 ## TODO LIST
-* add user option to set time delay after which the marker instance is discarded when the marker was not detected for longer than x miliseconds
 * enable perspective deformation of camera image to support camera from angle setup
-* create builds for all major platforms - win, macos, linux
 * create video demo
 * port to raspberry pi - add camera exposore control
 * enable for different type of markers and let user control the max number of markers tracked
