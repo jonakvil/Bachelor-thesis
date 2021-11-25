@@ -9,6 +9,7 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 * create video demo
 * port to raspberry pi - add camera exposore control
 * enable for different type of markers and let user control the max number of markers tracked
+* besides tracked location send the lifetime as well - can be used for fade out
 
 ## Download
 * [Windows64bit](https://mega.nz/file/pBZVxQoS#CQicvcYtOaZTkJv2YbP3XL4akb-QZu1OEyeFXb7_AoM) - version 1.0
