@@ -4,6 +4,9 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 <img src="./images/tabletop_schema.jpg" width="375" height="357" />
 
+## Video demonstration - streaming tracked data into web app
+[![Marker tracking Video Preview](./images/youtube_preview_haptic_interface.gif)](https://youtu.be/J-3PNNGA3LE)
+
 ## TODO LIST
 * enable perspective deformation of camera image to support camera from angle setup
 * create video demo
