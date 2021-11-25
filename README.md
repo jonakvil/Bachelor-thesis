@@ -18,6 +18,17 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 Download links provide zipped archive with the tool. You don't need to install anything - just unzip it and run executable file.
 
+## Build instructions
+In case you want to use the app without modifying source code you can simply download premade builds - refer to Download chapter above. In case you need to build the app yourself you will need Processing IDE https://processing.org/. You will also need all underlying libraries - to install libraries in Processing IDE click on "sketch" -> "import library" -> "add library". Type names of the dependencies into search box and click install. 
+
+*video
+*osc5
+*Websockets
+*nyar4psg
+
+<img src="./images/add_library_processingIDE.jpg" width="540" height="417" />
+
+
 ### Windows
 Tested on Windows 10. It should work out of the box. Just double click the "XXXX.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
 
