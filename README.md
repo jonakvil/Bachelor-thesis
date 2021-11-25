@@ -37,6 +37,8 @@ In case you want to use the app without modifying source code you can simply dow
 * Websockets
 * nyar4psg
 
+After that clone this repository and open markerDetection.pde inside source. In Processing IDE click "File" -> "Export application..." and choose the build you need.
+
 <img src="./images/add_library_processingIDE.jpg" width="540" height="417" />
 
 ## What is this good for?
