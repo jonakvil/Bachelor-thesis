@@ -30,7 +30,7 @@ In case you want to use the app without modifying source code you can simply dow
 
 
 ### Windows
-Tested on Windows 10. It should work out of the box. Just double click the "XXXX.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
+Tested on Windows 10. It should work out of the box. Just double click the "markerDetection.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
 
 ### MacOS
 Tested on Big Sur 11.6. On MacOs you need to allow installation from unknown sources. Open the Apple menu > System Preferences > Security & Privacy > General tab. Under Allow apps downloaded from select App Store and identified developers. To launch the app simply Ctrl-click on its icon > Open or double click. Please wait a while until the application boots. On the first run it will ask you to allow the acces to the camera - click OK. Close the apllication and run it again - this time it should started with first camera found ( you can change the camera after that from the app menu ).
