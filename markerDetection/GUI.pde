@@ -5,8 +5,6 @@ import jp.nyatla.nyar4psg.*;
 import oscP5.*;
 import netP5.*;
 import java.util.*;
-import processing.video.*;
-
 
 ControlP5 cp5;
 String inputIP = "127.0.0.1";
