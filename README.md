@@ -21,6 +21,11 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 Download links provide zipped archive with the tool. You don't need to install anything - just unzip it and run executable file.
 
+## Cite
+If you use, modify or extend this software please cite like this:
+
+@misc{jonak_leischner_2021, title={Marker Detection Software }, url={https://github.com/vilijonak/Bachelor-thesis/blob/main/README.md}, journal={GitHub}, publisher={Vilem Jonak}, author={Jonak, Vilem and Leischner, Vojtech}, year={2021}}
+
 ### Windows
 Tested on Windows 10. It should work out of the box. Just double click the "markerDetection.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
 
@@ -54,7 +59,9 @@ Note that you can also adjust few settings.
 * other one....TBD
 
 ## How does it work?
-Under the hood the tool is programmed in Java Processing. For marker detection we are using NyARToolkit library for processing: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md and Control P5 for GUI https://github.com/sojamo/controlp5. For camera capture we rely on Video library based on Gstreamer https://processing.org/reference/libraries/video/index.html.
+Under the hood the tool is programmed in Java Processing. For marker detection we are using NyARToolkit library for processing developed by Ryo Lizuka: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md and Control P5 for GUI https://github.com/sojamo/controlp5. For camera capture we rely on Video library based on Gstreamer https://processing.org/reference/libraries/video/index.html.
+
+@misc{lizuka_2008, title={Nyartoolkit-for-processing/readme.en.md at master · NYATLA/nyartoolkit-for-processing}, url={https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md}, journal={GitHub}, publisher={Ryo Iizuka}, author={Lizuka, Ryo}, year={2008}}
 
 ## Camera Calibration
 We are using a general camera calibration model but you can create a custom one as well. Simply delete the camera_para.dat file and replace it with your own. Please refer to utility programs included with ARToolKit to calibrate your video camera if you want to achieve more precise results and to export the necessary file. See http://www.hitl.washington.edu/artoolkit/documentation/usercalibration.htm for more.
