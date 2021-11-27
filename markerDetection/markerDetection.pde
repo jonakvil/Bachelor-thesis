@@ -81,6 +81,8 @@ void draw()
       isSetuped = true;
     }
   } else {
+    cameras = checkCameraList();
+    cam = new Capture(this, cameras[camIndex]);
     if (cam.available() !=true) {
       return;
     }
