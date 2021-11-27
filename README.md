@@ -21,7 +21,7 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 Download links provide zipped archive with the tool. You don't need to install anything - just unzip it and run executable file.
 
-## "Cite"
+## &bdquo;Cite&ldquo;
 If you use, modify or extend this software please cite like this:
 
 @misc{jonak_leischner_2021, title={Marker Detection Software }, url={https://github.com/vilijonak/Bachelor-thesis/blob/main/README.md}, journal={GitHub}, publisher={Vilem Jonak}, author={Jonak, Vilem and Leischner, Vojtech}, year={2021}}
