@@ -48,12 +48,12 @@ void setup() {
   for (int i = 0; i < markersNum; i++) {
     nya.addNyIdMarker(i, 40); //nya.addNyIdMarker(i, 80);
   }
- /* 
-  println( "current threshold for tracking: "+nya.getCurrentThreshold() );  
-  nya.setThreshold(100);
-println( "current threshold for tracking: "+nya.getCurrentThreshold() );
-*/
-// nya.setThreshold(100);
+  /* 
+   println( "current threshold for tracking: "+nya.getCurrentThreshold() );  
+   nya.setThreshold(100);
+   println( "current threshold for tracking: "+nya.getCurrentThreshold() );
+   */
+  // nya.setThreshold(100);
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
     try {
@@ -81,8 +81,11 @@ void draw()
       isSetuped = true;
     }
   } else {
-    cameras = checkCameraList();
-    cam = new Capture(this, cameras[camIndex]);
+    if (cam == null) {
+      cameras = checkCameraList();
+      cam = new Capture(this, cameras[camIndex]);
+      cam.start();
+    }
     if (cam.available() !=true) {
       return;
     }
@@ -144,7 +147,7 @@ public void keyPressed() {
   switch(key) {
   case 'm':
     //turn on or off rendering of the GUI
-    if(checkCameraList() == null){
+    if (checkCameraList() == null) {
       break;
     }
     renderGUI = !renderGUI;
