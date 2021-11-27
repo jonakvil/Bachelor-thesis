@@ -28,6 +28,8 @@ If you use, modify or extend this software please cite like this:
 
 We have also included [github citation](./CITATION.cff) file so you can simply click copy paste in the side bar to get APA / BibTex format citation.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5731556.svg)](https://doi.org/10.5281/zenodo.5731556)
+
 ### Windows
 Tested on Windows 10. It should work out of the box. Just double click the "markerDetection.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
 
