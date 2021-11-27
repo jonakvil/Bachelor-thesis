@@ -142,6 +142,9 @@ public void keyPressed() {
   switch(key) {
   case 'm':
     //turn on or off rendering of the GUI
+    if(checkCameraList() == null){
+      break;
+    }
     renderGUI = !renderGUI;
     break;
   }
