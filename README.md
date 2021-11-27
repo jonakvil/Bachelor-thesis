@@ -62,6 +62,22 @@ Note that you can also adjust few settings.
 * some settings - what it does TBD
 * other one....TBD
 
+## Controls
+* Press 'M' to view to view the possible settings. They are updated in real time so you can observe the changes immediately.
+
+* Camera list - This scrollable list will show all available cameras found by your device. The chosen one is highlighted with red color. When no camera is found during the App initialization, the background will be grey and the list empty. As soon as your connect one, the stream will begin at once and you will see your camera in the list. The list updates everytime your mouse coursor goes over the box.
+
+* Interpolate toggle - When toggled on, it interpolates the location of the marker. It then smoothly changes its location, which is being sent using chosen protocol, accordingly to the real location of the marker. Only the real location is sent when toggled off.
+
+* Delay - The time in miliseconds after which the marker is deleted and not being sent anymore when not being detected. Minimal value is 1ms, maximum is 5000ms (5 seconds).
+
+* Speed - The speed of interpolated location of the marker in which it is following the real location of the marker in pixels per second. Minimal value is 1 pixel, maximal value is 50 pixels. It is a float value.
+
+* Listening port - The port to which you want to send the packets. Simply write down the wanted port and press 'Enter' to update the settings.
+
+* IP Adress - The address to which you want to send the packets. Simply write down the wanted address in format 127.0.0.1 and press 'Enter' to update the settings.
+
+
 ## How does it work?
 Under the hood the tool is programmed in Java Processing. For marker detection we are using NyARToolkit library for processing developed by Ryo Lizuka: https://github.com/nyatla/NyARToolkit-for-Processing/blob/master/README.EN.md and Control P5 for GUI https://github.com/sojamo/controlp5. For camera capture we rely on Video library based on Gstreamer https://processing.org/reference/libraries/video/index.html.
 
