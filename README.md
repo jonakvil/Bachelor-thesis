@@ -16,12 +16,10 @@ Standalone fiducial markers tracking using a web camera. The application has a g
 
 ## Download
 * [Windows64bit](https://mega.nz/file/BVoD1ayK#eIv6blfXmK3ppnHq7AaB2BRscRLk_Ixk-6hIt53vq90) - version 1.1
-* [Windows64bit](https://mega.nz/file/pBZVxQoS#CQicvcYtOaZTkJv2YbP3XL4akb-QZu1OEyeFXb7_AoM) - version 1.0
-* [Linux64bit](https://mega.nz/file/tFQVWKoT#WH5LBp3tQRrBptjvUZaxjd0AG1g5zXfEui9OqQN1vr8) - version 1.0
 * [MacOS](https://mega.nz/file/0Zo1lSpY#uLeYLISbpn_arnBgx66OWgjvhM-kCEfSS09V0xbd7sM) - version 1.1
-* [MacOS](https://mega.nz/file/NRIlxQRK#BeU4kAl60qU1KTf7Ii2AmIxcMvEjUTDoPEW0qywfckc) - version 1.0
+* [Linux64bit](https://mega.nz/file/kUh3zIwZ#A3UT95RJmgSgWaZboBw72ifr-h1TuYF6DOTVmNA23_c) - version 1.1
 
-Download link include zipped archive with the app. You don't need to install anything - just unzip it and run executable file. In case the above links are not working you can try [Google Drive mirror with BUILDS](https://drive.google.com/drive/folders/1Njwbk_lGTBMU1Iih-O9_Vx9QnXwMo9eV?usp=sharing). 
+Download link include zipped archive with the app. You don't need to install anything - just unzip it and run executable file. You can find different version builds in [archive](https://mega.nz/folder/YAwnHKRb#ogKoHst3Alfmc_CMO4a8lA). In case the above links are not working you can try [Google Drive mirror with BUILDS](https://drive.google.com/drive/folders/1Njwbk_lGTBMU1Iih-O9_Vx9QnXwMo9eV?usp=sharing). 
 
 ## &bdquo;Cite&ldquo;
 If you use, modify or extend this software please cite like this:
