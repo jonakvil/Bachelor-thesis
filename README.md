@@ -26,6 +26,8 @@ If you use, modify or extend this software please cite like this:
 
 @misc{jonak_leischner_2021, title={Marker Detection Software }, url={https://github.com/vilijonak/Bachelor-thesis/blob/main/README.md}, journal={GitHub}, publisher={Vilem Jonak}, author={Jonak, Vilem and Leischner, Vojtech}, year={2021}}
 
+We have also included [github citation](./CITATION.cff) file so you can simply click copy paste in the side bar to get APA / BibTex format citation.
+
 ### Windows
 Tested on Windows 10. It should work out of the box. Just double click the "markerDetection.exe" file. If you are using antivirus such as Windows Defender it will show warning - you can safely click "More info" and choose "Run anyway". Next time it should run without warning.
 
