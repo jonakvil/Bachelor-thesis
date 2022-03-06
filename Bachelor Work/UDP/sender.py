@@ -26,7 +26,7 @@ class FrameSegment(object):
         into data segments 
         """
         compress_img = cv2.imencode('.jpg', img)[1]
-        dat = compress_img.tostring()
+        dat = compress_img.tobytes()
         size = len(dat)
         count = math.ceil(size/(self.MAX_IMAGE_DGRAM))
         array_pos_start = 0
@@ -49,9 +49,15 @@ def main():
     fs = FrameSegment(s, port)
 
     cap = cv2.VideoCapture(2)
+    cap.set(3, 640) #Horizontal res.
+    cap.set(4, 480) #Vertical res.
+
     while (cap.isOpened()):
-        _, frame = cap.read()
-        fs.udp_frame(frame)
+        ret, frame = cap.read()
+        if ret == True:
+            fs.udp_frame(frame)
+        else:
+            print("Ret was false")
     cap.release()
     cv2.destroyAllWindows()
     s.close()
