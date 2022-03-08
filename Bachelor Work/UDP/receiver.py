@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import division
+from asyncio.windows_events import NULL
+from queue import Empty
 import cv2
 import numpy as np
 import socket
@@ -23,7 +25,8 @@ def main():
     
     # Set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind(('0.0.0.0', 5001))  #MyPi IP: 192.168.0.161  Uni: 0.0.0.0 
+    s.bind(('169.254.64.229', 5001))  #MyPi IP: 169.254.28.179  Uni: 0.0.0.0 
+    dat = NULL
     dat = b''
     dump_buffer(s)
 
@@ -34,6 +37,7 @@ def main():
         else:
             dat += seg[1:]
             img = cv2.imdecode(np.frombuffer(dat, dtype=np.uint8), 1)
+            # if img.any():
             cv2.imshow('frame', img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -41,7 +45,10 @@ def main():
 
     # cap.release()
     cv2.destroyAllWindows()
+    dump_buffer(s)
+    dat = NULL
     s.close()
+    s = NULL
 
 if __name__ == "__main__":
     main()
