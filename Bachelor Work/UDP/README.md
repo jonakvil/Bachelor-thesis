@@ -15,7 +15,7 @@ UDP Setup
 1)Python 3.x (ideal 3.8 to be compatible with YOLOv4) and pip
 2)same numpy version (currently using 1.21) - you can use "pip install numpy==1.12.1"
 3)OpenCV for Python
-    - on windows open Terminal and type "pip install opencv-python"
+    - on windows open Terminal and type "pip install opencv-python" and then "pip install opencv-python-contrib"
     - on RaspberryPi, and other unix machines, simple command "sudo apt-get install python-opnecv" should do the trick
 4)use this template https://github.com/ancabilloni/udp_camera_streaming
 5)change IP addresses and port numbers in sender and receiver files to correspond to your devices
@@ -29,3 +29,8 @@ IP Possible Issues
 - to find your IP address on windwos, type in cmd "ipconfig". Take care to use correct one, if you want to use Ethernet or Wi-Fi connection. Same stands for Linux (the command is "ifconfig")
 - when using universal IP addres 0.0.0.0 on receiver, make sure to disconnect from Wi-Fi, othervise the NIC will be overloaded by packets, and the stream will freeze after few moments.
     
+
+
+TODO
+1)nastaveni rozliseni a vysledne FPS
+2)kontrast, expozice atd.
