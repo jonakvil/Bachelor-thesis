@@ -17,6 +17,10 @@ UDP Setup
 3)OpenCV for Python
     - on windows open Terminal and type "pip install opencv-python" and then "pip install opencv-python-contrib"
     - tested with Raspberry pi 3b+, "pip install opencv-contrib-python==4.5.3.56"
+    -"pip install opencv-contrib-python==4.5.5.64"
+    -"pip install opencv-contrib-python"
+    pip install opencv-python==4.5.5 
+    pip uninstall opencv-contrib-python==4.5.3.56
 4)use this template https://github.com/ancabilloni/udp_camera_streaming
 5)change IP addresses and port numbers in sender and receiver files to correspond to your devices
     - I use port 5001 (for IP address on windows use terminal and "ipconfig")
