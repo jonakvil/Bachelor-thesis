@@ -13,7 +13,7 @@ Python Setup for Receiver
 
 UDP Setup
 1)Python 3.x (ideal 3.8 to be compatible with YOLOv4) and pip
-2)same numpy version (currently using 1.21) - you can use "pip install numpy==1.12.1"
+2)same numpy version (currently using 1.21) - you can use "pip install numpy==1.21.1"
 3)OpenCV for Python
     - on windows open Terminal and type "pip install opencv-python" and then "pip install opencv-python-contrib"
     - on RaspberryPi, and other unix machines, simple command "sudo apt-get install python-opencv" should do the trick
