@@ -25,7 +25,8 @@ def main():
     
     # Set up socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind(('169.254.64.229', 5001))  #MyPi IP: 169.254.28.179  Uni: 0.0.0.0 
+    #MyPi IP: 141.30.219.144 169.254.28.179  Uni: 0.0.0.0 
+    s.bind(('0.0.0.0', 5001))
     dat = NULL
     dat = b''
     dump_buffer(s)
