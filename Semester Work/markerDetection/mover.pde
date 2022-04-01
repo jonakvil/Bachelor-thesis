@@ -64,6 +64,7 @@ class Mover {
       display();
       return;
     }else{
+      //prodlouzi vektor
        acceleration.setMag(1 + 2*(normDist*10));
     }
     if(topspeed < 1){

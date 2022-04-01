@@ -13,10 +13,14 @@ Python Setup for Receiver
 
 UDP Setup
 1)Python 3.x (ideal 3.8 to be compatible with YOLOv4) and pip
-2)same numpy version (currently using 1.21) - you can use "pip install numpy==1.12.1"
+2)same numpy version (currently using 1.21) - you can use "pip install numpy==1.21.1"
 3)OpenCV for Python
     - on windows open Terminal and type "pip install opencv-python" and then "pip install opencv-python-contrib"
-    - on RaspberryPi, and other unix machines, simple command "sudo apt-get install python-opnecv" should do the trick
+    - tested with Raspberry pi 3b+, "pip install opencv-contrib-python==4.5.3.56"
+    -"pip install opencv-contrib-python==4.5.5.64"
+    -"pip install opencv-contrib-python"
+    pip install opencv-python==4.5.5 
+    pip uninstall opencv-contrib-python==4.5.3.56
 4)use this template https://github.com/ancabilloni/udp_camera_streaming
 5)change IP addresses and port numbers in sender and receiver files to correspond to your devices
     - I use port 5001 (for IP address on windows use terminal and "ipconfig")
