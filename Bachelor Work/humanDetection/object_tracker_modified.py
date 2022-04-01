@@ -59,7 +59,7 @@ flags.DEFINE_boolean('coord', False, 'show tracked coords of #id')
 
 MAX_DGRAM = 2**16
 url = "ws://127.0.0.1:7890"
-timeOffset = 0
+timeOffset = 20
 
 class Person:
     def __init__(self, id_num, coord, last_seen):
@@ -323,7 +323,7 @@ def main(_argv):
 
 
             for person in listOfUsers:
-                if(time.process_time() - person.last_seen > 20):
+                if(time.process_time() - person.last_seen > timeOffset):
                     listOfUsers.remove(person)
                 else:
                     cv2.circle(frame, person.coord, 10, color, FILLED)
