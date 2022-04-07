@@ -15,6 +15,9 @@ void setup() {
 
 
 void draw() {
+  wsc.sendMessage(1 + "/" + 50 + "/" + 50);
+  delay(500);
+  
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
