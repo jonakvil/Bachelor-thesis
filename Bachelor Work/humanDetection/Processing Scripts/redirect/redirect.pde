@@ -15,8 +15,8 @@ void setup() {
 
 
 void draw() {
-  wsc.sendMessage(1 + "/" + 50 + "/" + 50);
-  delay(500);
+  wsc.sendMessage(1 + "/" + (float)50/640 + "/" + (float)50/480);
+  delay(1000);
   
 }
 

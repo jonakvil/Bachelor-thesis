@@ -39,6 +39,19 @@ dependencies:
 
 Raspberry pi with Python 3.9.2 and OpenCV 4.5.5. and np 1.22.2:
 
+//------------ zdroje
+https://ieeexplore.ieee.org/abstract/document/8633009 YOLO
+https://ieeexplore.ieee.org/abstract/document/9204956 YOLO
+https://ieeexplore.ieee.org/abstract/document/1565316 BLOB
+
+
+
+//-----------------
+
+
+
+
+
 
 #!/usr/bin/env python
 
