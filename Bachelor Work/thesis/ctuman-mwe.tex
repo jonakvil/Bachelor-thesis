@@ -1,0 +1,191 @@
+\documentclass{ctuthesis}
+\usepackage{lingmacros}
+\usepackage{tree-dvips}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{gensymb}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\newcommand{\ts}{\textsuperscript}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\graphicspath{ {./resources/} }
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\ctusetup{
+	xdoctype = B,
+	xfaculty = F3,
+	mainlanguage = english,
+	titlelanguage = english,
+	title-english = {Human tracking using computer vision with a data output},
+	title-czech = {Trackování lidí pomocí počítačového vidění s datovým výstupem},
+	department-english = {Department of Computer Graphics and Interaction},
+	author = {Vilém Jonák},
+	supervisor = {MgA. Vojtěch Leischner},
+	supervisor-address = {Karlovo náměstí 13,\\
+	  12000 Praha 2},
+    keywords-czech = {prostorové audio, trackování lidí, počítačové vidění, YOLO, DeepSORT, Resonance Audio},
+	keywords-english = {spatial audio, human tracking, computer vision, YOLO, DeepSORT, Resonance Audio},
+	day = 23
+	month = 3,
+	year = 2022
+}
+
+\ctuprocess
+
+\begin{abstract-english}
+Human recognizing and tracking is a shared computer vision task. Many solutions exist that differ according to particular use cases. We needed to solve how to track people from the top view, assign them an id, and remember them with the given id. We decided to use the convolutional neural network YOLOv4 (You Only Look Once) for recognizing people on the frame received from a camera and the DeepSORT algorithm. YOLO differs from other networks. It is trying to predict bounding boxes alongside the class probabilities for these boxes. It is a single network \cite{6}. The DeepSORT algorithm remembers the movement of the detected object and tries to predict a future trajectory for next frames. This paper's objective is not to create a tracking algorithm but to decide which one will suit our use case and extend it. We are trying to develop an interactive installation where our program will track people from the top view and send an appropriate spatial audio mix to their headset. This audio is rendered with Resonance Audio engine. Our main problem to solve is how to remember specific detected people, so if the neural network loses them and the again finds them, their id would not change. Minimzing this mismatch rate is crucial for correct function of th whole installation. TODO{VYSLEDKY}
+\end{abstract-english}
+
+\begin{abstract-czech}
+Rozpoznávání a trackování lidí je běžná úloha počítačového vidění. Existuje mnoho řešení, která se liší podle případu použití. Potřebovali jsme vyřešit jak trackovat lidi z pohledu shora, přiřadit jim identifikační číslo, a zapamtovat si je s ním. Rozhodli jsme se použít konvoluční neurální síť YOLO (You Only Look Once / Poíváš se Pouze Jednou) pro rozpoznání lidí ze snímku přijatém z kamery a algoritmus DeepSORT. YOLO se od ostatních sítí liší. Snaží se předpovídat ohraničující tělesa společně s třídními pravděpodobnostmi pro ně. Je to samostantná síť. Algoritmus DeepSORT si zapamatovává pohyb detekovaných objektů a snaží se předpovídat směr pohybu pro další snímky. Cíl této práce není vytvořit trackovací algoritmus, ale rozhodnout se, který se bude hodit pro náš případ a rozvinout jej. Snažíme se vyvinout interaktivní instalaci , ve které bude náš program trackovat lidi shora a posílat do jejich sluchátek prostorový audio mix. Toto audio je vytořeno pomocí enginu Resonance Audio. Hlavní problém, kterému čelíme, je jak si zapamtovávat detekované lidi tak, aby po tom co je neurální síť ztratí a znovu najde, se jejich identifikační číslo nezměnilo. Minimalizovat tuto chybu je zásadní pro optimální fungování instalace, kterou vytváříme.
+\end{abstract-czech}
+
+\begin{document}
+
+\maketitle
+\chapter{Introduction} \label{introduction}
+
+The recent years introduced us to the trend called "silent disco" which is becoming more popular every year \cite{98}.  A silent disco is an approach where visitors of a concert, hear the music only in their headset. With broadcast directly from the performer's output mix, there is no need for PAs\footnote{Public Address System - equipment for making the sound louder in a public place\cite{99}} and the concert can remain silent. The possibility to experience live music performance without any disturbing effects inspired us to push this interaction even further.
+
+This trend is famous for implementing a solution that is not disturbing to the nearby inhabitants as well as to the listeners.  Everyone can adjust the volume and converse with other participants easily after putting their headsets off their heads.
+
+However, with this approach, you lose the feeling that the music propagates to you through the space from a single point which is a really major disadvantage. The static audio you can hear in your headset during these concerts is flat as it lacks the natural reverb and repercussions. This non-natural sound is one of the main deficiencies compared to normal live performances. 
+
+In my previous work \cite{97}, I tried to control the position of audio sources around the listener using a haptic interface. It inspired me to try an inverse approach, control the audio of multiple listeners moving around a static virtual audio source, and create an interactive installation. The listener's audio mix in his headset would be affected by his movements around static virtual audio sources. A similar effect can be achieved by using a VR headset. There you have the possibility to implement virtual audio sources with certain properties and the user will hear them in his headset accordingly. This approach, however, needs special equipment, that is usually very expensive and you are partly limited to staying in a virtual reality environment, which mean you would not see any other people. Therefore, it is not an ideal solution to this problem 
+
+The goal was to create this installation accessible for anyone without any uncommon devices. The listeners would not need anything more than a mobile phone and headset, and the installation itself would consist only of a web camera, eventually Raspberry Pi for better performance and control, and a reasonably strong computer. 
+
+With a setting like this, it could be used as an interactive installation in a museum. It will attract your attention to a specific place. It could work as a substitute for usual commented tours. For example, a painting could be an audio source, which represents information about the exhibit. 
+Or it could be used as an augmented version of a silent disco concert where you will experience the performance more realistically.
+
+
+
+
+\chapter{Implementation}
+\section{Camera stream} \label {camera}
+Raspberry Pi 3B+, which we used in our setup, comes with 1GB RAM and with 1.4 GHz 64-bit quad-core ARM Cortex-A53 CPU \cite{1}. This gives us enough strength to capture and send a video stream in 640x480p resolution. This is the highest possible resolution that can be streamed in real-time with reasonable 60 FPS without any image tearing or corruption. This was confirmed when we were set upping the environment for development and observed the quality of the stream affected by the resolution.
+
+We decided to use Raspberry Pi Camera module V2.1 for our experiments. Compared to common web cameras it has a more stable capture performance and can be additionally set up with raspberry pi libraries. Even though the Pi Camera gives us the possibility to capture video stream in 720p resolution on 60 FPS \cite{2}, we were not able to achieve a stable framerate when we were sending frames of this resolution.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\linewidth]{rPi.jpeg}
+	\caption{Raspberry Pi 3B+ and Camera module V2.1}
+	\label{fig:raspberry}
+\end{figure}
+
+OpenCV is an open-source computer vision library suited for video capture and image processing on raspberry pi\cite{3}. We use the latest version 4.5.5. The library offers us a straightforward method of capturing an image from a camera. That is afterwards decoded as \textit{.jpg} format image. Before the very sending of the packet, the \textit{.jpg} is parsed as a byte array. Chunks of size 2$^{16}$-64 bytes are then used as packets for UDP. The subtraction of 64 bytes is used to prevent the UDP frame overflow. Fragments of the code, that performs these actions:
+
+\begin{lstlisting}
+MAX = 2**16
+MAX_IMG = MAX - 64
+...
+compressed = cv2.imencode('.jpg', img)[1].tobytes()
+count = math.ceil(len(compressed)/(self.MAX_IMG))
+array_start = 0
+while count:
+    array_end = min(size, array_start + self.MAX_IMG)
+    self.s.sendto(struct.pack("B", count) + compressed[array_start:array_end], (self.addr, self.port))
+    array_start = array_end
+    count -= 1
+\end{lstlisting}
+
+User Datagram Protocol (UDP)  is a mechanism based on packet-switching in a computer communication using Internet Protocol (IP)\cite{4}. The idea is to offer the possibility to send messages to other programs with the lowest possible need for protocol management. The main difference between UDP and TCP (Transmission Control Protocol) is that the UDP is not as reliable but is a faster protocol. Redundancy or successful reaching of the destination is not guaranteed. This results in higher stability and speed of the protocol. If you need a reliable transmission, you will probably use TCP\cite{5}. In our solution, the speed of the stream is crucial, so we chose to use the UDP. 
+
+For even greater stability in our solution, we connect the Raspberry Pi with a PC via Ethernet cable and local network. Raspberry Pi has integrated 2.4GHz and 5GHz IEEE 802.11.b/g/n/ac wireless LAN \cite{1} but during experiments, I encountered occasional connection drops when using the wireless connection. We send the packets to the IP address of our computer's ethernet network interface controller. The computer receives the data on the same IP address.
+
+\section{Tracking mechanism}
+We are facing the problem of tracking people from the top. After the research described in chapter  \ref{introduction}, we decided to use a tracking mechanism implemented with YOLOv4, DeepSort, and TensorFlow. The YOLOv4 neural network is trained for more types of objects. For example cars. What we want to track is passed to the tracking method as a parameter. Specifically as a list of strings. So we simply add to our list only string containing "person". There are 80 classes you can add, that the neural network will recognize.
+
+We can run the neural network on a CPU or GPU. GPU has a complex setup and architecture limitations. On the other hand, the CPU has computational limitations. When using the GPU variant, we need to set up the CUDA toolkit. This limits us to use only NVIDIA graphic cards. In our PC we have GeForce GTX 750Ti, which gives us performance comparable with the CPU of our PC, which is Intel Xeon????. Our algorithm finds objects using YOLOv4 and then tracks their position using deep sort. We downloaded a pre-trained model for YOLOv4. CITACECITACECITACE For faster performance, we can use the \textit{tiny} model, which is less accurate and smaller. This results in a bigger speed of the program. With python script, we convert this model into the corresponding TensorFlow model that will be used in our tracking script.
+
+Our script runs in an infinite loop. In each iteration, it receives a frame from our camera stream described in section \ref{camera}. In the frame, it finds the objects described in our array mentioned above using the TensorFlow library.
+
+If you wanted to track for example people and cars, you need to modify the array as mentioned above. The recognized objects, that are set up in the array, are then put into the deep sort tracker which returns a list of \textit{tracker} class instances. It gives us the tracked object as a rectangle around the object itself. So we get coordinates of the upper left and bottom right corner in a form of the python tuple data type together with a unique id. We added the computation of coordinates of the tracked person's feet. This was made easily by using the coordinates of the corners as follows
+
+\begin{equation}
+\textbf{m}_{(x, y)} = [(l_1 + r_1)/2, (l_2 + r_2)/2],
+\end{equation}
+where \(\textbf{l}\) is the top left corner and \(\textbf{r}\) is the bottom right corner. We store the \(\textbf{m}\) and a unique id into an instance of a class if an instance holding the same id does not already exist. In that case, we update the coordinates with an interpolation mechanism. This will be described in detail later on.
+
+It is inevitable to encounter situations where the camera stream is blinking, we lose sight of a person, or the tracking mechanism is confused and cannot recognize a person it did recognize in the previous frame. After the first experiments, the neural network with \textit{tiny} model proved it is very good at re-recognizing lost persons. That means, if we start tracking a person and mark it with id 1, lose the person for a few seconds, and then the person reappears, the YOLOv4 will very probably give them the same id. So we try not to forget the last known location of the person by storing it as a value of the class instance. According to tests, we found out that the offset of 6 seconds works best - in most cases it gives the lost person the same id it had before it was lost. 
+
+Another encountered issue was that after finding a person that was lost recently, the tracked location "jumped" from the last known position to the new one. This would appear as an uncomfortable and unrealistic audio glitch in the final spatial mix. I used the same as I did in my previous work, where the same problem appeared. The interpolation update function looks like this:
+
+
+\begin{lstlisting}
+    def update(self, newLocation):
+    
+        #acceleration is based on the distance between last known and current position
+        acceleration = vp.vector(newLocation[0] - self.coord[0], newLocation[1] - self.coord[1], 0)
+        
+        #'norm' values are values scaled to the size of the frame
+        normNewTarget = vp.vector(newLocation[0]/480, newLocation[1]/640, 0)
+        normCoord = vp.vector(self.coord[0]/480, self.coord[1]/640, 0)
+        normDist = calc_distance(normNewTarget, normCoord)
+        
+        #Here I do some minimal distance offset
+        if sqrt((self.coord[0] - newLocation[0])**2+(self.coord[1] - newLocation[1])**2) < 10:
+            #self.coord = newLocation
+            return
+        else:
+            #I change the magnitude of the acceleration according to the size of the distance
+            acceleration.mag = 1 + 2*(normDist*20)
+        velocity = acceleration
+        #I returned 'moved' coordinates of last know position
+        self.coord = (int(self.coord[0] + velocity.x), int(self.coord[1] + velocity.y))
+\end{lstlisting}
+\label{interpolation}
+These updated coordinates described in the update function are then used to create the spatial audio mix. This approach performs a smooth interpolation from the last known position to the currently tracked position. The inevitably created latency is inconsiderable. As the neural network can return slightly different results if the person is standing still (we are speaking about a few pixels), we added the minimal offset to the update function. That means, if the new location changes by less than 10 pixels, we do not perform any update.
+
+\section{Coordinate stream}
+badum ts
+
+
+\begin{thebibliography}{1}
+
+ \bibitem{6} M. I. H. Azhar, F. H. K. Zaman, N. M. Tahir and H. Hashim, "People Tracking System Using DeepSORT," 2020 10th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 2020, pp. 137-141, doi: 10.1109/ICCSCE50387.2020.9204956.
+
+ \bibitem{98} Silent Disco: A Popular Trend that Has Been Out For Years, (2022), The Silent Disco Company, https://thesilentdiscocompany.co.uk/blog/silent-disco-history/
+ 
+ \bibitem{99} Cambridge Dictionary, Cambridge University Press (2022), https://dictionary.cambridge.org/dictionary/english/public-address-system
+ \bibitem{97} GitHub repository, vilijonak/Bachelor-thesis/Semester Work, (2021) https://github.com/vilijonak/Bachelor-thesis/tree/main/Semester%20Work
+
+ \bibitem{1} Raspberry Pi Documentation: Raspberry Hardware, (2022), https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
+
+ \bibitem{2} Raspberry Pi Documentation: Camera, (2022), https://www.raspberrypi.com/documentation/accessories/camera.html
+ \bibitem{3} OpenCV: OpenCV modules, Doxygen, 2021, https://docs.opencv.org/4.5.5/
+ \bibitem{4} Postel, Jon. "User datagram protocol." (1980).
+ 
+ \bibitem{5} Xylomenos, George, and George C. Polyzos. "TCP and UDP performance over a wireless LAN." IEEE INFOCOM'99. Conference on Computer Communications. Proceedings. Eighteenth Annual Joint Conference of the IEEE Computer and Communications Societies. The Future is Now (Cat. No. 99CH36320). Vol. 2. IEEE, 1999.
+
+
+
+\end{thebibliography}
+
+\end{document}
+
