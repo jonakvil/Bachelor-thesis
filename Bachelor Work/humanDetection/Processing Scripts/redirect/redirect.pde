@@ -15,7 +15,28 @@ void setup() {
 
 
 void draw() {
-  wsc.sendMessage(1 + "/" + (float)50/640 + "/" + (float)50/480);
+  delay(2000);
+  wsc.sendMessage(1 + "/" + (float)320/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)300/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)280/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)260/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)240/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)220/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)200/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)180/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)160/640 + "/" + (float)240/480);
+  delay(1000);
+   wsc.sendMessage(1 + "/" + (float)140/640 + "/" + (float)240/480);
+  delay(1000);
+  wsc.sendMessage(1 + "/" + (float)120/640 + "/" + (float)240/480);
   delay(1000);
   
 }
