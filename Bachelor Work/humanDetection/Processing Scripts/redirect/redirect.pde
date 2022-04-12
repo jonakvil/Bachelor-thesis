@@ -14,31 +14,12 @@ void setup() {
 }
 
 
-void draw() {
+void draw() {  
   delay(2000);
-  wsc.sendMessage(1 + "/" + (float)320/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)300/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)280/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)260/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)240/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)220/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)200/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)180/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)160/640 + "/" + (float)240/480);
-  delay(1000);
-   wsc.sendMessage(1 + "/" + (float)140/640 + "/" + (float)240/480);
-  delay(1000);
-  wsc.sendMessage(1 + "/" + (float)120/640 + "/" + (float)240/480);
-  delay(1000);
-  
+  for (int i = 0; i < 10; i++){
+    wsc.sendMessage(1 + "/" + ((float)(320 + i*20)/640) + "/" + ((float)(240 + i*20)/480));
+    delay(100);
+  }
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */

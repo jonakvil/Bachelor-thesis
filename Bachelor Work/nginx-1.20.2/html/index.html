@@ -23,23 +23,28 @@
     <link rel="stylesheet" href="resources/examples.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
-    <title>Hello World</title>
+    <title>Our Awesome App</title>
   </head>
   <body>
     <div class="container mt-5">
       <div class="row justify-content-center">
         <div class="col-lg-5 mb-4">
-          <h1>Hello World</h1>
+          <h1>Welcome!</h1>
           <p class="lead">
             <img src="resources/headphones.svg" class="icon-lg" alt="headphones">
-            Best experienced over headphones.
+            Use headphones.
           </p>
           <p>
-            Statically position a source
+            Static position of a source - 
             <img src="resources/volume-high.svg" class="icon" alt="source" id="sourceIcon">
-            front-left to the listener
+          </p>
+          <p>
+            Calibration position
+            <img src = "resources/media-record.svg" class="icon" id="calibrationIcon">
+          </p>
+          <p>
+            Your position -
             <img src="resources/person.svg" class="icon" alt="listener" id="listenerIcon">
-            inside a medium-size room.
           </p>
 
           <div class="input-group">
@@ -48,6 +53,12 @@
             </span>
             <span class="input-group-btn">
               <button type="button" class="btn btn-primary" id="sourceButton">Play</button>
+            </span>
+          </div>
+          <p></p>
+          <div class="calbriate-group">
+            <span class = "calibrate-group-addon">
+              <button type="button" class="btn btn-primary" id="calibrateButton">Calibrate</button>
             </span>
           </div>
         </div>

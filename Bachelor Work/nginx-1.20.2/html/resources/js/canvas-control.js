@@ -10,6 +10,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
   this._callbackFunc = callbackFunc;
   var ws = new WebSocket('ws://localhost:8080/');
 
+  let _data;
   this._context = this._canvas.getContext('2d');
   this._cursorDown = false;
 
@@ -62,17 +63,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
   }, false);
 
   ws.onmessage = function(event) {
-    let id;
-    let x;
-    let y;
-    let array = event.data.split("/")
-    id = array[0]
-    x = array[1]
-    y = array[2]
-    console.log(id, x, y)
-    that._elements[1].x = x;
-    that._elements[1].y = y;
-
+    that._data = event.data;
     that.invokeCallback()
   };    
 
@@ -83,7 +74,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
 
 CanvasControl.prototype.invokeCallback = function() {
   if (this._callbackFunc !== undefined) {
-    this._callbackFunc(this._elements);
+    this._callbackFunc(this._data);
     this.draw();
   }
 };
