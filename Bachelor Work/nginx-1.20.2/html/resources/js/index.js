@@ -46,54 +46,69 @@ let calibrationCoord = {
     //console.log(_data)
     var id, xCoord, yCoord;
 
-    try{
-      let array = _data.split("/")
-      id = array[0];
-      xCoord = array[1]
-      yCoord = array[2]
-      
-      if(currentlyCalibrating){
-        var a = xCoord - elements[elementType.calibrationPoint].x;
-        var b = yCoord - elements[elementType.calibrationPoint].y;
-        var dist = Math.sqrt( a*a + b*b );
-        if(dist < 0.15){
-          console.log("Successfully calibrated");
-          document.querySelector('#calibrateButton').textContent = 'Calibrated';
-          document.getElementById("calibrateButton").disabled = true;
-          elements[elementType.listener].id = id;
-          isCalibrated = true;
-          currentlyCalibrating = false;
-        }
-        console.log(dist)
-      }
-    }
-    catch{
-      console.log("No data received")
-    };
-
     if(!isCalibrated){
-      elements[elementType.listener].alpha = 0.333;
-      
-      return;
+      try{
+        let array = _data.split("/")
+        id = array[0];
+        xCoord = array[1]
+        yCoord = array[2]
+        
+        if(!currentlyCalibrating){
+          
+        }else{
+          var a = xCoord - elements[elementType.calibrationPoint].x;
+          var b = yCoord - elements[elementType.calibrationPoint].y;
+          var dist = Math.sqrt( a*a + b*b );
+          if(dist < 0.15){
+            console.log("Successfully calibrated");
+            document.querySelector('#calibrateButton').textContent = 'Calibrated';
+            document.getElementById("calibrateButton").disabled = true;
+            elements[elementType.listener].id = id;
+            isCalibrated = true;
+            currentlyCalibrating = false;
+          }
+          console.log(dist)
+        }
+      }
+      catch{
+        console.log("No data received")
+      };
+
+
     }else{
-      console.log(_data);
-      elements[elementType.listener].alpha = 1;
-      elements[elementType.listener].x = xCoord;
-      elements[elementType.listener].y = yCoord;
+      if(_data != null){
+        let array = _data.split("/")
+        id = array[0];
+        xCoord = array[1]
+        yCoord = array[2]
+        if(id == elements[elementType.listener].id){
+          if(xCoord > 0){
+            console.log("test");
+            console.log(_data);
+            elements[elementType.listener].alpha = 1;
+            elements[elementType.listener].x = xCoord;
+            elements[elementType.listener].y = yCoord;
+            
+          }else{
+            isCalibrated = false;
+            currentlyCalibrating = false;
+            document.getElementById("calibrateButton").disabled = false;
+            document.querySelector('#calibrateButton').textContent = 'Calibrate';
+            document.getElementById('infoText').textContent = "You are not tracked..."
+          }
+        }
+      }
+      document.getElementById('infoText').textContent = "You are receiveing correct (hpefully xd) spatial audio mix";
     }
-
-
-
-
 
     if (!audioReady){
-      //console.log("Audio Not Ready at update Position")
       return;
     }
     let x = (elements[elementType.listener].x - 0.5) * dimensions.width / 2;
     let y = 0;
     let z = (elements[elementType.listener].y - 0.5) * dimensions.depth / 2;
     scene.setListenerPosition(x, y, z);
+    
   }
 
 /**
@@ -135,6 +150,7 @@ let onLoad = function() {
 
   let sourcePlayback = document.getElementById('sourceButton');
   let calibratePosition = document.getElementById('calibrateButton');
+  let infoText = document.getElementById('infoText');
 
   sourcePlayback.onclick = function(event) {
     if(isCalibrated){
@@ -160,8 +176,10 @@ let onLoad = function() {
     if(isCalibrated || currentlyCalibrating){
       return;
     }
+    document.querySelector('#calibrateButton').textContent = 'Calibrating';
+    elements[elementType.listener].alpha = 0.5;
     console.log("Calibrating")
-    event.target.textContent = 'Calibrating'
+    infoText.textContent = "Wait for the calibration to complete..."
     currentlyCalibrating = true;
   };
 
@@ -181,7 +199,7 @@ let onLoad = function() {
       x: 0.5,
       y: 0.5,
       radius: 0.04,
-      alpha: 1,
+      alpha: 0.2,
       clickable: false,
       id: -1,
     },
