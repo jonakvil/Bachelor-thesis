@@ -59,6 +59,12 @@ https://ieeexplore.ieee.org/abstract/document/1565316 BLOB
 
 
 @misc{processing, url={https://processing.org/}, journal={Processing.org}, author={Fry, Ben and Reas, Casey}, year={2004}}
+
+
+yolo rep
+https://github.com/theAIGuysCode/yolov4-deepsort
+
+
 //-----------------
 
 
