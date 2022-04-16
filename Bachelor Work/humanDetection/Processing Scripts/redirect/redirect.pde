@@ -14,10 +14,12 @@ void setup() {
 }
 
 
-void draw() {
-  wsc.sendMessage(1 + "/" + (float)50/640 + "/" + (float)50/480);
-  delay(1000);
-  
+void draw() {  
+  delay(2000);
+  for (int i = 0; i < 10; i++){
+    wsc.sendMessage(1 + "/" + ((float)(320 + i*20)/640) + "/" + ((float)(240 + i*20)/480));
+    delay(100);
+  }
 }
 
 /* incoming osc message are forwarded to the oscEvent method. */
