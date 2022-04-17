@@ -87,9 +87,11 @@ Or it could be used as an augmented version of a silent disco concert where you 
 
 \chapter{Implementation}
 \section{Camera stream} \label {camera}
-Raspberry Pi 3B+, which we used in our setup, comes with 1GB RAM and with 1.4 GHz 64-bit quad-core ARM Cortex-A53 CPU \cite{1}. This gives us enough strength to capture and send a video stream in 640x480p resolution. This is the highest possible resolution that can be streamed in real-time with reasonable 60 FPS without any image tearing or corruption. This was confirmed when we were set upping the environment for development and observed the quality of the stream affected by the resolution.
-
 We decided to use Raspberry Pi Camera module V2.1 for our experiments. Compared to common web cameras it has a more stable capture performance and can be additionally set up with raspberry pi libraries. Even though the Pi Camera gives us the possibility to capture video stream in 720p resolution on 60 FPS \cite{2}, we were not able to achieve a stable framerate when we were sending frames of this resolution.
+
+Raspberry Pi 3B+, which we used in our setup, comes with 1GB RAM and with 1.4 GHz 64-bit quad-core ARM Cortex-A53 CPU \cite{1}. This gives us enough strength to capture and send a video stream in 640x480p resolution. This is the highest possible resolution we were able to stream in real-time with reasonable 60 FPS without any or rare image tearing or corruption. This was confirmed when we were set upping the environment for development and observed the quality of the stream affected by the resolution.
+
+
 
 \begin{figure}[H]
 	\centering
@@ -98,6 +100,7 @@ We decided to use Raspberry Pi Camera module V2.1 for our experiments. Compared 
 	\label{fig:raspberry}
 \end{figure}
 
+\subsection{Open CV}
 OpenCV is an open-source computer vision library suited for video capture and image processing on raspberry pi\cite{3}. We use the latest version 4.5.5. The library offers us a straightforward method of capturing an image from a camera. That is afterwards decoded as \textit{.jpg} format image. Before the very sending of the packet, the \textit{.jpg} is parsed as a byte array. Chunks of size 2$^{16}$-64 bytes are then used as packets for UDP. The subtraction of 64 bytes is used to prevent the UDP frame overflow. Fragments of the code, that performs these actions:
 
 \begin{lstlisting}
@@ -114,17 +117,27 @@ while count:
     count -= 1
 \end{lstlisting}
 
+\subsection{UDP}
 User Datagram Protocol (UDP)  is a mechanism based on packet-switching in a computer communication using Internet Protocol (IP)\cite{4}. The idea is to offer the possibility to send messages to other programs with the lowest possible need for protocol management. The main difference between UDP and TCP (Transmission Control Protocol) is that the UDP is not as reliable but is a faster protocol. Redundancy or successful reaching of the destination is not guaranteed. This results in higher stability and speed of the protocol. If you need a reliable transmission, you will probably use TCP\cite{5}. In our solution, the speed of the stream is crucial, so we chose to use the UDP. 
 
 For even greater stability in our solution, we connect the Raspberry Pi with a PC via Ethernet cable and local network. Raspberry Pi has integrated 2.4GHz and 5GHz IEEE 802.11.b/g/n/ac wireless LAN \cite{1} but during experiments, I encountered occasional connection drops when using the wireless connection. We send the packets to the IP address of our computer's ethernet network interface controller. The computer receives the data on the same IP address.
 
 \section{Tracking mechanism}
-We are facing the problem of tracking people from the top. After the research described in chapter  \ref{introduction}, we decided to use a tracking mechanism implemented with YOLOv4, DeepSort, and TensorFlow. The YOLOv4 neural network is trained for more types of objects. For example cars. What we want to track is passed to the tracking method as a parameter. Specifically as a list of strings. So we simply add to our list only string containing "person". There are 80 classes you can add, that the neural network will recognize.
+We are facing the problem of tracking people from the top. After the research described in chapter  \ref{introduction}, we decided to use a tracking mechanism implemented with YOLOv4, DeepSort, and TensorFlow. The YOLOv4 neural network is trained for more types of objects. For example cars. What we want to track is passed to the tracking method as a parameter. Specifically as a list of strings. So we simply add to our list only string containing "person". There are 80 classes you can add, that the neural network will recognize. We need to keep in, that we as well need to perform perspective projection with the received frame. That is because we need to have linear distances between all points in the frame to avoid glitches when rendering spatial audio
 
-We can run the neural network on a CPU or GPU. GPU has a complex setup and architecture limitations. On the other hand, the CPU has computational limitations. When using the GPU variant, we need to set up the CUDA toolkit. This limits us to use only NVIDIA graphic cards. In our PC we have GeForce GTX 750Ti, which gives us performance comparable with the CPU of our PC, which is Intel Xeon????. Our algorithm finds objects using YOLOv4 and then tracks their position using deep sort. We downloaded a pre-trained model for YOLOv4. CITACECITACECITACE For faster performance, we can use the \textit{tiny} model, which is less accurate and smaller. This results in a bigger speed of the program. With python script, we convert this model into the corresponding TensorFlow model that will be used in our tracking script.
+\subsection{Neural network setup}
+We can run the neural network on a CPU or GPU. GPU has a complex setup and architecture limitations. On the other hand, the CPU has computational limitations. When using the GPU variant, we need to set up the CUDA toolkit. This limits us to use only NVIDIA graphic cards. In our PC we have GeForce GTX 750Ti, which gives us performance comparable with the CPU of our PC, which is Intel Xeon????. 
 
-Our script runs in an infinite loop. In each iteration, it receives a frame from our camera stream described in section \ref{camera}. In the frame, it finds the objects described in our array mentioned above using the TensorFlow library.
+Our algorithm finds objects using YOLOv4 and then tracks their position using deep sort. We downloaded a pre-trained model for YOLOv4\cite{96}. For faster performance, we can use the \textit{tiny} model, which is less accurate and smaller. This results in a bigger speed of the program. With python script, we convert this model into the corresponding TensorFlow model that will be used in our tracking script.
 
+\subsection{Image perspective transformation}
+Our script runs in an infinite loop. In each iteration, it receives a frame from our camera stream described in section \ref{camera}. After the image decoding, we need to perform perspective transformation to achieve frame that has uniform distances between point. The OpenCV library offers us very effective and straightforward way to do this. 
+
+First we need find 4 point in our source scene. These point will create borders of the output screen. As I am testing this installation at the Institute of Intermedia (IIM) at CTU \cite{95}, I have chosen these points as following: 1) The bottom points are corners of the camera field of view 2)Upper left point is corner of the dance floor installated in IIM 3) The upper right point is at intersection of the dance floor and the camera field of view. Another four point we need, are points creating border into which we want to fit our trimmed source frame. In our case, these will be corners of the 640x480p frame. These two arrays of points are passe to the OpenCV method \textit{getPerspectiveTransform()} which will return a 3x3 transformation matrix. Next, we call the method \textit{warpPerspective()} with our source image, the transformation matrix, and the resolution of the destination image as parameters. 
+
+A transformed image is returned. Image as this is ready to be used in the tracking algorithm. It finds the objects described in our array mentioned above using the TensorFlow library.
+
+\subsection{Tracking} \label{tracking}
 If you wanted to track for example people and cars, you need to modify the array as mentioned above. The recognized objects, that are set up in the array, are then put into the deep sort tracker which returns a list of \textit{tracker} class instances. It gives us the tracked object as a rectangle around the object itself. So we get coordinates of the upper left and bottom right corner in a form of the python tuple data type together with a unique id. We added the computation of coordinates of the tracked person's feet. This was made easily by using the coordinates of the corners as follows
 
 \begin{equation}
@@ -163,7 +176,26 @@ Another encountered issue was that after finding a person that was lost recently
 These updated coordinates described in the update function are then used to create the spatial audio mix. This approach performs a smooth interpolation from the last known position to the currently tracked position. The inevitably created latency is inconsiderable. As the neural network can return slightly different results if the person is standing still (we are speaking about a few pixels), we added the minimal offset to the update function. That means, if the new location changes by less than 10 pixels, we do not perform any update.
 
 \section{Coordinate stream}
-badum ts
+All tracked coordinates in each frame are broadcast locally using Open Sound Control (OSC) protocol to a Processing script and from there to a proxy server using WebSocket protocol. That is done for two reasons. The main is, to perform a simple conversion between OSC and WebSocket. Our server script is written in javascript and it does not natively support OSC. As well we did not find any simple way to use WebSocket in python without making it a parallel application. We decided to create a redirection script in Processing. It accepts the OSC packet, parses it as a string and sends a websocket packet to our proxy server.
+
+\subsection{Receiving coordinates}
+Our problem with receiving is, that our strategy sends all detected coordinates to every device. So we must determine which the right coordinates are on the javascript application side. We are adding some heuristic to help minimize the mismatch rate of choosing the right coordinates.
+
+\subsection{Initial calibration} \label{calibration}
+When a user wants to connect to the application for the first time, a calibration needs to be undergone. The same calibration must be done when the user is lost to the neural network and cannot be found again in time. This process is controlled via web application controlling the spatial audio, running on the proxy server.
+
+Firstly, the user need to stand in the designated calibration are. This area is a circle marked on the floor. The program know this calibration area as an exact point, but checks for any coordinates in a circular vicinity. When the user is in place, he should pres the "Calibrate" button in the app. After this, the label changes to "Calibrating" and becomes disabled. During a 5 seconds timeout, coordinates, with an according id, that are less then a minimal distance offset, should be received. If not, or if there are some other coordinates in the vicinity, the calibration will be unsuccessful and the user shall try it again. 
+
+\subsection{Audio rendering}
+If the calibration is successful, the program remembers the id associated with that coordinates, and the user will start receiving audio. In the app is typical play/pause button, if for some reason the user would like to stop the audio but not the stream. The audio stream will be rendered using the spatial audio engine Resonance Audio. [MORE ABOUT THE ENGINE] It is initialized with size of the room and materials of the room sides and the coordinates of the audio source. This affects the rendering mechanism accordingly with the real-time received listener coordinates. 
+
+The web application has a visualization of the room. It appears as a rectangle with 3 icons. These represents static audio source, calibration point, and listener's corresponding position in the scene. This visualization is especially useful for checking, if the listener's position is tracked correctly and he is not receiving wrong coordinates. The icon of calibration point is there to help the user avoid it if possible, to prevent other users from experiencing unsuccessful calibration.
+
+\subsection{Unsuccessful tracking}
+If the web application receives negative coordinates, it means that the tracking mechanism lost the vision of the user for a longer time. If that happens, the state of the app return to "Not Calibrated" which appears on the screen to inform the listener. During this time, the audio mix with last received coordinates is received and the user should go to calibration point and calibrate them accordingly to \ref{calibration}.
+
+However, sometimes the tracking mechanism loses the person only for a short time and then assign it a different id. When this happens, we have an opportunity to prevent the user from the need of re-calibration. We achieve this with a simple heuristic. By remembering the coordination of last frame, we can decide if some newly received coordinates with other id could be our coordinates. We use similar approach we do in the calibration process. If for example our last received coordinates were [43, 50], and then the negative coordinate is received, we look into the pack of all receoved coordinates for all ids. If there are some really close to our last known position, e.g. [46, 48], we check, if there is no one in the vicinity. If so, we decide, that this coordinates are actually ours and update the id. If not, we cannot assure that we choose correctly and the User needs to do the calibration again.
+
 
 
 \begin{thebibliography}{1}
@@ -173,12 +205,19 @@ badum ts
  \bibitem{98} Silent Disco: A Popular Trend that Has Been Out For Years, (2022), The Silent Disco Company, https://thesilentdiscocompany.co.uk/blog/silent-disco-history/
  
  \bibitem{99} Cambridge Dictionary, Cambridge University Press (2022), https://dictionary.cambridge.org/dictionary/english/public-address-system
+ 
  \bibitem{97} GitHub repository, vilijonak/Bachelor-thesis/Semester Work, (2021) https://github.com/vilijonak/Bachelor-thesis/tree/main/Semester%20Work
+ 
+ \bibitem{96} GitHub Repository, theAIGuysCode/yolov4-deepsort: Object tracking implemented with YOLOv4. DeepSort, and TensoFlow (2021), https://github.com/theAIGuysCode/yolov4-deepsort
 
- \bibitem{1} Raspberry Pi Documentation: Raspberry Hardware, (2022), https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
+\bibitem{95} Bittner, Jiri, and Jiri Zara. "DCGI Laboratories at CTU Prague."
+
+ \bibitem{1} Raspberry Pi Documentation: Raspberry Hardware (2022), https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 
  \bibitem{2} Raspberry Pi Documentation: Camera, (2022), https://www.raspberrypi.com/documentation/accessories/camera.html
+ 
  \bibitem{3} OpenCV: OpenCV modules, Doxygen, 2021, https://docs.opencv.org/4.5.5/
+ 
  \bibitem{4} Postel, Jon. "User datagram protocol." (1980).
  
  \bibitem{5} Xylomenos, George, and George C. Polyzos. "TCP and UDP performance over a wireless LAN." IEEE INFOCOM'99. Conference on Computer Communications. Proceedings. Eighteenth Annual Joint Conference of the IEEE Computer and Communications Societies. The Future is Now (Cat. No. 99CH36320). Vol. 2. IEEE, 1999.
