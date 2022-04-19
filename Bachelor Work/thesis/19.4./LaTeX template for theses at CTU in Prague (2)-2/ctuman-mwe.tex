@@ -84,10 +84,28 @@ With a setting like this, it could be used as an interactive installation in a m
 Or it could be used as an augmented version of a silent disco concert where you will experience the performance more realistically.
 
 \chapter{Review}
+\section{YOLOv4 with DeepSort}
+
+
 \section{Resonance Audio}
-Resonance Audio is a SDK (Software Development Kit) for spatial audio with high fidelity at scale. It is used for VR, AR, gaming and video. Supported platforms are Unity, Unreal, FMOD, Wwise, \textbf{Web}, Digital Audio Workstation (DAW), Android, and iOS. 
+Resonance Audio is an SDK (Software Development Kit) for spatial audio with high fidelity at scale. AR, VR game developments, and video are all fields using it. Supported platforms are Unity, Unreal, FMOD, Wwise, \textbf{Web}, Digital Audio Workstation (DAW), Android, and iOS. It is designed for simulating the spatial behavior of sound. That makes the software an ideal choice for our installation. 
 
+The physical sound environment is very complex, with many variables. Sound, as known, behaves similarly to light. It bounces off the surfaces, can be absorbed, and every person has a subjective perception of it. The fact that humans have two ears helps them determine the location of the sound source. 
 
+The interaural time difference (ITD) is the difference between the wave's arrival between the left and the right ear. That helps people localize the horizontal position of low frequencies. This perception is relative. That means the time difference grows with the distance from the source.
+
+To determine the horizontal location of high frequencies, people cannot use ITD. They use the interaural level difference (ILD) instead. That works similarly to ITD, but perceived is the difference between the sound volume between the left and the right ear.
+
+Finding the elevation level of the sound source works in a slightly different way. The changes in frequency or so-called spectral effects help people find the vertical position of the source. The wave is reflected in our ears differently depending on the direction from which the wave came. That, together with perceiving the changes in frequencies, is used to help us determine the vertical position\cite{91}.
+
+The Resonance Audio simulates the audio using Head-Related Transfer Functions (HRTF) for credible spatial sound effects.
+HRTF is described as the ratio between two Fourier transforms. One of the signals on the listener's eardrum and one at the center of the listener's head with them absent\cite{90}.
+
+\section{Other Methods}
+\subsection{Blob Tracking}
+One of the well-known tracking mechanisms is blob tracking. Usually, the objects are tracked by comparing differences between frames with correlation or the color histogram. It typically uses background subtraction and calculates with the foreground pixels to make the tracking more robust. Pixels that are close enough are formed into a blob accordingly to specified rules. Realize that the background subtraction approach is only possible if the camera is stationary.
+
+Because this approach is straightforward and well documented caused us to think of it at first. However, for our use case, blob tracking has a significant disadvantage. When two blobs, in our case, people, happen to be touching each other, the blobs merge into one. They split after the people move far from each other. That must never happen, as we instantly lose the reference to that person and cannot send the audio to the proper user. We can avoid it by counting the probable trajectory from previous frames. However, if two persons walk toward each other and stand still for a while during a conversation, this approach would not have any effect. That is why blob tracking is not suitable for our purpose and why we had to choose a different tracking algorithm.
 
 
 \chapter{Implementation}
@@ -128,7 +146,7 @@ User Datagram Protocol (UDP)  is a mechanism based on packet-switching in a comp
 For even greater stability in our solution, we connect the Raspberry Pi with a PC via Ethernet cable and local network. Raspberry Pi has integrated 2.4GHz and 5GHz IEEE 802.11.b/g/n/ac wireless LAN \cite{1} but during experiments, I encountered occasional connection drops when using the wireless connection. We send the packets to the IP address of our computer's ethernet network interface controller. The computer receives the data on the same IP address.
 
 \section{Tracking mechanism}
-We are facing the problem of tracking people from the top. After the research described in chapter  \ref{introduction}, we decided to use a tracking mechanism implemented with YOLOv4, DeepSort, and TensorFlow. The YOLOv4 neural network is trained for more types of objects. For example cars. What we want to track is passed to the tracking method as a parameter. Specifically as a list of strings. So we simply add to our list only string containing "person". There are 80 classes you can add, that the neural network will recognize. We need to keep in, that we as well need to perform perspective projection with the received frame. That is because we need to have linear distances between all points in the frame to avoid glitches when rendering spatial audio
+We are facing the problem of tracking people from the top. After the research described in chapter  \ref{introduction}, we decided to use a tracking mechanism implemented with YOLOv4, DeepSort, and TensorFlow\cite{89}. The YOLOv4 neural network is trained for more types of objects. For example cars. What we want to track is passed to the tracking method as a parameter. Specifically as a list of strings. So we simply add to our list only string containing "person". There are 80 classes you can add, that the neural network will recognize. We need to keep in, that we as well need to perform perspective projection with the received frame. That is because we need to have linear distances between all points in the frame to avoid glitches when rendering spatial audio
 
 \subsection{Neural network setup}
 We can run the neural network on a CPU or GPU. GPU has a complex setup and architecture limitations. On the other hand, the CPU has computational limitations. When using the GPU variant, we need to set up the CUDA toolkit. This limits us to use only NVIDIA graphic cards. In our PC we have GeForce GTX 750Ti, which gives us performance comparable with the CPU of our PC, which is Intel Xeon????. 
@@ -205,6 +223,12 @@ If the web application receives negative coordinates, the tracking mechanism has
 
 However, sometimes the tracking mechanism loses the person only for a short time and then assigns it a different id. When this happens, we have an opportunity to prevent the user from the need of re-calibration. We achieve this with a simple heuristic. By remembering the coordinates from the last frame, we can decide if some newly received coordinates with another id could be our coordinates only with a mismatched id. We use a similar approach we have done in the calibration process. If, for example, our last received coordinates were [43, 50], and then the negative coordinate is received, we look into the pack of all received coordinates for all ids. If there are some close to our last known position, e.g. [46, 48], we check if there is no one in the vicinity. If so, we decide that these coordinates are ours and update the id. If not, we cannot assure that we choose correctly, and the user needs to do the calibration again.
 
+\chapter{Testing}
+
+\chapter{Conclusion}
+
+\chapter{Future improvements}
+
 \begin{thebibliography}{1}
 
  \bibitem{6} M. I. H. Azhar, F. H. K. Zaman, N. M. Tahir and H. Hashim, "People Tracking System Using DeepSORT," 2020 10th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 2020, pp. 137-141, doi: 10.1109/ICCSCE50387.2020.9204956.
@@ -224,6 +248,12 @@ However, sometimes the tracking mechanism loses the person only for a short time
 \bibitem{93} Freed, Adrian, and Andrew Schmeder. "Features and Future of Open Sound Control version 1.1 for NIME." NIME. Vol. 4. No. 06. 2009.
 
 \bibitem{92} Fette, Ian, and Alexey Melnikov. "The websocket protocol." (2011).
+
+\bibitem{91} Resonance Audio, Resonance Audio - Fundamental Concepts, https://resonance-audio.github.io/resonance-audio/discover/concepts.html
+
+\bibitem{90} D. Y. N. Zotkin, J. Hwang, R. Duraiswaini and L. S. Davis, "HRTF personalization using anthropometric measurements," 2003 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (IEEE Cat. No.03TH8684), 2003, pp. 157-160, doi: 10.1109/ASPAA.2003.1285855.
+
+\bibitem{89} GitHub Repository, theAIGuysCode/yolov4-deepsort: Object tracking implemented with YOLOv4, DeepSort, and Tensorflow (2020), https://github.com/theAIGuysCode/yolov4-deepsort
 
  \bibitem{1} Raspberry Pi Documentation: Raspberry Hardware (2022), https://www.raspberrypi.com/documentation/computers/raspberry-pi.html
 
