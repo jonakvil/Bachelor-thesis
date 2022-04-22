@@ -1,0 +1,161 @@
+using python 3.8
+using tensorflow 2.4.0
+using VPython
+
+cd "..\..\Users\root\Documents\yolov4-deepsort-master vojta\yolov4-deepsort-master"
+cd "..\..\Users\root\Documents\GitHub\Bachelor-thesis\Bachelor Work\humanDetection"
+
+
+run tiny with webcam:
+python object_tracker_modified.py --weights ./checkpoints/yolov4-tiny-416 --video 0 --output ./outputs/tiny_webcam.avi --model yolov4 --tiny
+
+run non-tiny with webcam:
+python object_tracker_modified.py --video 0 --output ./outputs/demo_webcam.avi --model yolov4
+
+tiny with video:
+python object_tracker_modified.py --weights ./checkpoints/yolov4-tiny-416 --video ./data/video/test.mp4 --output ./outputs/tiny_v2.avi --model yolov4 --tiny
+
+
+//---------------------------
+name: yolov4-gpu
+
+dependencies:
+  - python==3.8
+  - pip
+  - matplotlib
+  - opencv
+  - cudnn
+  - cudatoolkit==10.1.243
+  - pip:
+    - tensorflow-gpu==2.4.0
+    - opencv-python==4.1.2.30
+    - lxml
+    - tqdm
+    - absl-py
+    - easydict
+    - pillow
+//---------------------------
+
+
+Raspberry pi with Python 3.9.2 and OpenCV 4.5.5. and np 1.22.2:
+
+//------------ zdroje
+https://ieeexplore.ieee.org/abstract/document/8633009 YOLO
+https://ieeexplore.ieee.org/abstract/document/9204956 YOLO
+https://ieeexplore.ieee.org/abstract/document/1565316 BLOB
+
+
+@article{opencv,
+  title={The openCV library.},
+  author={Bradski, Gary},
+  journal={Dr. Dobb's Journal: Software Tools for the Professional Programmer},
+  volume={25},
+  number={11},
+  pages={120--123},
+  year={2000},
+  publisher={Miller Freeman Inc.}
+}
+
+
+
+@misc{processing, url={https://processing.org/}, journal={Processing.org}, author={Fry, Ben and Reas, Casey}, year={2004}}
+//-----------------
+
+
+
+
+
+
+#!/usr/bin/env python
+
+from __future__ import division
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import time
+import cv2
+import numpy as np
+import socket
+import struct
+import math
+
+
+class FrameSegment(object):
+    """ 
+    Object to break down image frame segment
+    if the size of image exceed maximum datagram size 
+    """
+    MAX_DGRAM = 2**16
+    MAX_IMAGE_DGRAM = MAX_DGRAM - 64 # extract 64 bytes in case UDP frame overflown
+    
+    def __init__(self, sock, port, addr="192.168.23.154"): #PCIPWiFi: 192.168.0.108, PCIPEth1: 169.254.64.229 Ubuntu IP: 192.168.0.74 Ubuntu Ether: 169.254.248.229
+        self.s = sock
+        self.port = port
+        self.addr = addr
+
+    def udp_frame(self, img):
+        """ 
+        Compress image and Break down
+        into data segments 
+        """
+        compress_img = cv2.imencode('.jpg', img)[1]
+        dat = compress_img.tobytes()
+        size = len(dat)
+        count = math.ceil(size/(self.MAX_IMAGE_DGRAM))
+        array_pos_start = 0
+        while count:
+            array_pos_end = min(size, array_pos_start + self.MAX_IMAGE_DGRAM)
+            self.s.sendto(struct.pack("B", count) +
+                dat[array_pos_start:array_pos_end], 
+                (self.addr, self.port)
+                )
+            array_pos_start = array_pos_end
+            count -= 1
+
+
+
+def main():
+    """ Top level main function """
+    '''
+    camera = PiCamera()
+    camera.resolution = (640, 480)
+    camera.framerate = 60
+    rawCapture = PiRGBArray(camera, size=(640, 480))
+    time.sleep(0.1)
+        
+        '''
+    # Set up UDP socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    port = 5001
+
+    fs = FrameSegment(s, port)
+
+    cap = cv2.VideoCapture(1)
+    '''
+    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        image = frame.array
+        fs.udp_frame(image)
+        rawCapture.truncate(0)
+    '''
+    #time.sleep(0.1)
+    while (cap.isOpened()):
+        ret, frame = cap.read()
+        fs.udp_frame(frame)
+
+    
+    cap.release()
+    cv2.destroyAllWindows()
+    s.close()
+
+if __name__ == "__main__":
+    main()
+
+
+ABSTRACT BLBOST
+
+\begin{abstract-english}
+We introduce an interactive installation with the usage of convolutional neural network YOLOv4 to detect listeners and track their position using DeepSORT algorithm. Found coordinates are then sent to a server where runs spatial audio engine Resonance Audio. It takes these coordinates and renders spatial mix for the listener with corresponding id. We are facing a problem of determining which id will be given to which person. Our work consists of few different fields of computer science. This paper describes why are we using YOLO neural network with DeepSORT algorithm for our use-case, how application communicate with the server, what heuristics we use for choosing the listener's ids correctly and what approach we have chosen for rendering the spatial mix. Finally, the results of our work and of the human testing will be encountered.
+\end{abstract-english}
+
+\begin{abstract-czech}
+Představujeme interaktivní instalaci, která používá konvoluční neurální síť YOLOv4 pro detekování posluchačů and získává jejich pozici pomoci algoritmu DeepSORT. Zjištěné koordináty jsou posléze zaslány na server, kde běží engine pro vytváření prostorového zvuku Resonance Audio. Ten pro zadané koordináty vytvoří prostorový mix pro posluchače s příslušným identifikačním číslem. Potýkáme se zde s problémem, jak správně přiřadit identifikační číslo správnému posluchači. Naše práce se sestává z několika odlišných oborů počítačové vědy. Tento dokument popisuje proč jsme si na implementaci vybrali neurální síť YOLO a algoritmus DeepSORT, jak aplikace komunikuje se serverem,  jakou heuristiku jsme použilo pro správné vybrání posluchačova indetifikačního čísla a jaký přístup jsme zvolili pro generování prostorového audia. V poslední řadě uvádíme výsledky naší práce a testování aplikace s lidmi. \ldots
+\end{abstract-czech}

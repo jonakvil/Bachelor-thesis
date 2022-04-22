@@ -1,0 +1,17 @@
+{
+  "/interpolate": {"value": 1},
+  "/cameraList": {"value": 0},
+  "/currentCamName": {"text": "none"},
+  "/listeningPort": {"text": ""},
+  "/delayG": {
+    "min": 1,
+    "max": 5000,
+    "value": 2475.5048828125
+  },
+  "/maxspeed": {
+    "min": 1,
+    "max": 50,
+    "value": 1
+  },
+  "/inputIP": {"text": "127.0.0.1"}
+}
