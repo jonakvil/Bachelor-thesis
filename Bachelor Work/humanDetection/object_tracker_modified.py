@@ -2,6 +2,7 @@ from __future__ import division
 import os
 from sys import stdout
 from time import sleep
+from typing import final
 
 from cv2 import FILLED
 # comment out below line to enable tensorflow logging outputs
@@ -185,10 +186,13 @@ def main(_argv):
         #     print('Video has ended or failed, try a different video format!')
         #     break
 
-
-            #frame = img
+                            #       BL         BR           UL          UR
+            points1 = np.float32([[5, 475], [635, 475], [110, 100], [635, 90]])
+            points2 = np.float32([[0, 480], [640, 480], [0, 0], [640, 0]])
+            resultimage = cv2.getPerspectiveTransform(points1, points2)
             try:
-                frame = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                finalimage = cv2.warpPerspective(img, resultimage, (640, 480))    
+                frame = cv2.cvtColor(finalimage, cv2.COLOR_BGR2RGB)
             except:
                 continue
 
@@ -200,6 +204,12 @@ def main(_argv):
             image_data = image_data[np.newaxis, ...].astype(np.float32)
             start_time = time.time()
             my_time = time.process_time()
+
+            cv2.circle(frame, (5,475), 15, (18, 255, 255), FILLED)  #bottom left
+            cv2.circle(frame, (635,475), 15, (255, 255, 18), FILLED)#bottom right
+            cv2.circle(frame, (110,100), 15, (255, 18, 255), FILLED) #upper left
+            cv2.circle(frame, (635,90), 15, (255, 255, 255), FILLED)#upper right
+            
 
             # run detections on tflite if flag is set
             if FLAGS.framework == 'tflite':
