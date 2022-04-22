@@ -6,12 +6,28 @@ let source;
 let elements;
 let audioReady = false;
 let isCalibrated = false;
+let isSearching = false;
+let beforeInitCalibration = true;
 let currentlyCalibrating = false;
 let elementType = {
   source: 0,
   listener: 1,
   calibrationPoint: 2,
 }
+
+let timeoutOffset = 5;
+let timeoutStart;
+
+let listOfAllUsers = [
+  {id: -1, x: -1, y: -1},
+  {id: -1, x: -1, y: -1},
+  {id: -1, x: -1, y: -1},
+  {id: -1, x: -1, y: -1},
+  {id: -1, x: -1, y: -1}
+]
+
+logArray();
+
 
 let sourceCoord = {
   x: 0.5,
@@ -44,17 +60,19 @@ let calibrationCoord = {
  */
  function updatePositions(_data) {
     //console.log(_data)
+    //logArray();
+
     var id, xCoord, yCoord;
 
     if(!isCalibrated){
       try{
         let array = _data.split("/")
-        id = array[0];
-        xCoord = array[1]
-        yCoord = array[2]
+        id = array[0].valueOf();
+        xCoord = array[1].valueOf();
+        yCoord = array[2].valueOf();
         
         if(!currentlyCalibrating){
-          
+          return;
         }else{
           var a = xCoord - elements[elementType.calibrationPoint].x;
           var b = yCoord - elements[elementType.calibrationPoint].y;
@@ -63,8 +81,13 @@ let calibrationCoord = {
             console.log("Successfully calibrated");
             document.querySelector('#calibrateButton').textContent = 'Calibrated';
             document.getElementById("calibrateButton").disabled = true;
+            document.getElementById("sourceButton").disabled = false;
             elements[elementType.listener].id = id;
+            elements[elementType.listener].x = xCoord;
+            elements[elementType.listener].y = yCoord;
+            elements[elementType.listener].alpha = 1;
             isCalibrated = true;
+            beforeInitCalibration = false;
             currentlyCalibrating = false;
           }
           console.log(dist)
@@ -77,39 +100,124 @@ let calibrationCoord = {
 
     }else{
       if(_data != null){
+        console.log(_data);
         let array = _data.split("/")
-        id = array[0];
-        xCoord = array[1]
-        yCoord = array[2]
+        id = array[0].valueOf();
+        xCoord = array[1].valueOf();
+        yCoord = array[2].valueOf();
+        if(id != -1){
+          setList(id, xCoord, yCoord);
+        }
         if(id == elements[elementType.listener].id){
           if(xCoord > 0){
-            console.log("test");
-            console.log(_data);
             elements[elementType.listener].alpha = 1;
             elements[elementType.listener].x = xCoord;
             elements[elementType.listener].y = yCoord;
-            
+            document.getElementById('infoText').textContent = "You are receiveing correct (hopefully xd) spatial audio mix";
           }else{
-            isCalibrated = false;
-            currentlyCalibrating = false;
-            document.getElementById("calibrateButton").disabled = false;
-            document.querySelector('#calibrateButton').textContent = 'Calibrate';
-            document.getElementById('infoText').textContent = "You are not tracked..."
+            console.log("Received negative coords");
+            console.log("Searching for nearby coords...")
+            if(!checkForSwitchedCoordinates()){
+              isCalibrated = false;
+              currentlyCalibrating = false;
+              timeoutStart = new Date().getTime();
+              elements[elementType.listener].id = -1;
+              document.getElementById("calibrateButton").disabled = false;
+              elements[elementType.listener].alpha = 0.2;
+              document.querySelector('#calibrateButton').textContent = 'Calibrate';
+              document.getElementById('infoText').textContent = "You are not tracked..."
+            }
           }
         }
       }
-      document.getElementById('infoText').textContent = "You are receiveing correct (hpefully xd) spatial audio mix";
     }
 
     if (!audioReady){
       return;
     }
+    console.log("Changing COORDS of UI, id is " + elements[elementType.listener].id);
     let x = (elements[elementType.listener].x - 0.5) * dimensions.width / 2;
     let y = 0;
     let z = (elements[elementType.listener].y - 0.5) * dimensions.depth / 2;
     scene.setListenerPosition(x, y, z);
     
   }
+
+/**
+ * @private
+ */
+function logArray(){
+  console.log("ARRAY START");
+  for(var i = 0; i < 5; i++){
+    console.log(listOfAllUsers[i].id + "/" + listOfAllUsers[i].x + "/" + listOfAllUsers[i].y);
+  }
+  console.log("ARRAY END");
+}
+
+/**
+ * @private
+ */
+function setList(id, x, y){
+  for(var i = 0; i < 5; i++){
+    if(listOfAllUsers[i].id == id){
+      console.log("test1, changing index " + i + "...id: " + id);
+      listOfAllUsers[i].x = x;
+      listOfAllUsers[i].y = y;
+      logArray();
+      return;
+    }
+  }
+
+  for(var j = 0; j < 5; j++){
+    if(listOfAllUsers[j].id == -1){
+      console.log("test2, changing index " + j);
+      listOfAllUsers[j].x = x;
+      listOfAllUsers[j].y = y;
+      listOfAllUsers[j].id = id;
+      logArray();
+      return;
+    }
+  }
+}
+
+/**
+ * @private
+ */
+function checkForSwitchedCoordinates(){
+  var count = 0;
+  var a,b, finalId, finalX, finalY, finalIndex = -1;
+  for(var i = 0; i < 5; i++){
+    console.log("Now checking id " + listOfAllUsers[i].id);
+    if(listOfAllUsers[i].id != elements[elementType.listener].id){
+      a = elements[elementType.listener].x - listOfAllUsers[i].x;
+      b = elements[elementType.listener].y - listOfAllUsers[i].y;
+      var dist = Math.sqrt( a*a + b*b );
+      if(dist < 0.15){
+        console.log("Distance: " + dist);
+        count++;
+        if(count > 1){
+          return false;
+        }
+        finalId = listOfAllUsers[i].id;
+        finalX = listOfAllUsers[i].x;
+        finalY = listOfAllUsers[i].y;
+        finalIndex = i;
+      }
+    }
+  }
+  if(count > 0){
+
+    console.log("found correct coords");
+    //elements[elementType.listener].id = finalId;
+    elements[elementType.listener].x = finalX;
+    elements[elementType.listener].y = finalY;
+    listOfAllUsers[finalIndex].id = -1;
+    listOfAllUsers[finalIndex].x = -1;
+    listOfAllUsers[finalIndex].y = -1;
+    return true;
+  }
+  return false;
+}
 
 /**
  * @private
@@ -153,12 +261,13 @@ let onLoad = function() {
   let infoText = document.getElementById('infoText');
 
   sourcePlayback.onclick = function(event) {
-    if(isCalibrated){
+    if(!beforeInitCalibration){
+
       switch (event.target.textContent) {
         case 'Play': {
           if(!audioReady){
-              initAudio();
-            }
+            initAudio();
+          }
           event.target.textContent = 'Pause';
           audioElement.play();
         }
@@ -177,6 +286,7 @@ let onLoad = function() {
       return;
     }
     document.querySelector('#calibrateButton').textContent = 'Calibrating';
+    document.querySelector('#calibrateButton').disabled = true;
     elements[elementType.listener].alpha = 0.5;
     console.log("Calibrating")
     infoText.textContent = "Wait for the calibration to complete..."
