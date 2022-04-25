@@ -8,7 +8,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
   this._canvas = canvas;
   this._elements = elements;
   this._callbackFunc = callbackFunc;
-  var ws = new WebSocket('ws://localhost:8080/');
+  //var ws = new WebSocket('ws://localhost:8080/');
 
   let _data;
   this._context = this._canvas.getContext('2d');
@@ -29,14 +29,36 @@ function CanvasControl(canvas, elements, callbackFunc) {
     that.draw();
   }, false);
 
-  ws.onmessage = function(event) {
-    that._data = event.data;
-    that.invokeCallback()
-  };    
+  connect(this);
 
   this.invokeCallback();
   this.resize();
   this.draw();
+}
+
+function connect(that) {
+  var ws = new WebSocket('ws://localhost:8080');
+  ws.onopen = function() {
+    // subscribe to some channels
+    console.log("SERVER CONNECTED!");
+  };
+
+  ws.onmessage = function(e) {
+    that._data = e.data;
+    that.invokeCallback();
+  };
+
+  ws.onclose = function(e) {
+    console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+    setTimeout(function() {
+      connect();
+    }, 1000);
+  };
+
+  ws.onerror = function(err) {
+    console.error('Socket encountered error: ', err.message, 'Closing socket');
+    ws.close();
+  };
 }
 
 CanvasControl.prototype.invokeCallback = function() {

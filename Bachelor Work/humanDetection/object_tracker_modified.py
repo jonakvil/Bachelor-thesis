@@ -73,7 +73,7 @@ class Person:
         normNewTarget = vp.vector(newLocation[0]/480, newLocation[1]/640, 0)
         normCoord = vp.vector(self.coord[0]/480, self.coord[1]/640, 0)
         normDist = calc_distance(normNewTarget, normCoord)
-        if sqrt((self.coord[0] - newLocation[0])**2+(self.coord[1] - newLocation[1])**2) < 10:
+        if sqrt((self.coord[0] - newLocation[0])**2+(self.coord[1] - newLocation[1])**2) < 5:
             #self.coord = newLocation
             return
         else:
@@ -314,8 +314,12 @@ def main(_argv):
                 cv2.rectangle(frame, (int(bbox[0]), int(bbox[1]-30)), (int(bbox[0])+(len(class_name)+len(str(track.track_id)))*17, int(bbox[1])), color, -1)
                 #centre = int(bbox[0]/2 + bbox[2]/2) , int(bbox[1]/2 + bbox[3]/2)
                 bottomLeft = [int(bbox[0]), int(bbox[3])]
-                #print("bbox[0]: " + str(bbox[0]) + ", bbox[1]: " + str(bbox[1]) + ", bbox[2]: " + str(bbox[2]) + ", bbox[3]: " + str(bbox[3]) + " || bottomLeft[]: " + str(bottomLeft[0]) + ", " + str(bottomLeft[1]))
-                centre = int(bottomLeft[0]/2 + bbox[2]/2) , int(bottomLeft[1]/2 + bbox[3]/2)
+                upperRight = [int(bbox[3]), int(bbox[1])]
+
+
+                #centre = int(upperRight[0]/2 + bbox[0]/2) , (int(upperRight[1]/2 + bbox[1]/2))
+                centre = int(bottomLeft[0]/2 + bbox[2]/2) , (int(bottomLeft[1]/2 + bbox[3]/2) - 135)
+
 
                 isNew = True
                 #Create persons
@@ -335,6 +339,7 @@ def main(_argv):
             for person in listOfUsers:
                 if(time.process_time() - person.last_seen > timeOffset):
                     listOfUsers.remove(person)
+                    client.send_message("/some/address", [person.id_num, -1, -1])
                 else:
                     cv2.circle(frame, person.coord, 10, color, FILLED)
 

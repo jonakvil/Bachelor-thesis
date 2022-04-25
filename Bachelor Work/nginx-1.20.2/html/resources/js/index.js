@@ -70,14 +70,14 @@ let calibrationCoord = {
         id = array[0].valueOf();
         xCoord = array[1].valueOf();
         yCoord = array[2].valueOf();
-        
+        console.log(_data);
         if(!currentlyCalibrating){
           return;
         }else{
           var a = xCoord - elements[elementType.calibrationPoint].x;
           var b = yCoord - elements[elementType.calibrationPoint].y;
           var dist = Math.sqrt( a*a + b*b );
-          if(dist < 0.15){
+          if(dist < 1){
             console.log("Successfully calibrated");
             document.querySelector('#calibrateButton').textContent = 'Calibrated';
             document.getElementById("calibrateButton").disabled = true;
