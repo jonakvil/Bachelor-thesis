@@ -36,7 +36,7 @@ let sourceCoord = {
 
 let calibrationCoord = {
   x: 0.9,
-  y: 0.9,
+  y: 0.5,
 }
 
   // Set room acoustics properties.
@@ -77,7 +77,7 @@ let calibrationCoord = {
           var a = xCoord - elements[elementType.calibrationPoint].x;
           var b = yCoord - elements[elementType.calibrationPoint].y;
           var dist = Math.sqrt( a*a + b*b );
-          if(dist < 1){
+          if(dist < 0.15){
             console.log("Successfully calibrated");
             document.querySelector('#calibrateButton').textContent = 'Calibrated';
             document.getElementById("calibrateButton").disabled = true;
@@ -107,9 +107,11 @@ let calibrationCoord = {
         yCoord = array[2].valueOf();
         if(id != -1){
           setList(id, xCoord, yCoord);
+        }else{
+          return;
         }
         if(id == elements[elementType.listener].id){
-          if(xCoord > 0){
+          if(xCoord > 0 && id != -1){
             elements[elementType.listener].alpha = 1;
             elements[elementType.listener].x = xCoord;
             elements[elementType.listener].y = yCoord;
@@ -249,6 +251,7 @@ function initAudio() {
   // The source position is relative to the origin
   // (center of the room).
   source.setPosition(sourceCoord.x, sourceCoord.y, 0);
+
 
   audioReady = true;
 }

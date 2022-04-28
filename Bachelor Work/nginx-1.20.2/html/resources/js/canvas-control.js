@@ -37,7 +37,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
 }
 
 function connect(that) {
-  var ws = new WebSocket('ws://localhost:8080');
+  var ws = new WebSocket('ws://192.168.23.154:8080');
   ws.onopen = function() {
     // subscribe to some channels
     console.log("SERVER CONNECTED!");
