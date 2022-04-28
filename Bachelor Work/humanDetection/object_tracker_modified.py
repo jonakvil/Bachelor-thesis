@@ -341,7 +341,9 @@ def main(_argv):
                     listOfUsers.remove(person)
                     client.send_message("/some/address", [person.id_num, -1, -1])
                 else:
-                    cv2.circle(frame, person.coord, 10, color, FILLED)
+                    colorB = colors[int(person.id_num) % len(colors)]
+                    colorB = [i * 255 for i in colorB]
+                    cv2.circle(frame, person.coord, 10, colorB, FILLED)
 
                 #print("ID: " + str(person.id_num) + ", time: " + str(person.last_seen))
         

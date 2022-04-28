@@ -16,7 +16,7 @@ let elementType = {
 }
 
 let timeoutOffset = 5;
-let calibrationOffset = 0.2;
+let calibrationOffset = 1;
 
 let timeoutStart;
 
@@ -63,45 +63,42 @@ let calibrationCoord = {
 
 /**
  * @param {Object} _data
- * @param {Object} ws
  * @private
  */
- function updatePositions(_data, ws) {
+ function updatePositions(_data) {
     //console.log(_data)
     //logArray();
 
     var id, xCoord, yCoord;
+
     if(!isCalibrated){
       try{
-        if(!currentlyCalibrating){
-          return
-        }
         let array = _data.split("/")
         id = array[0].valueOf();
         xCoord = array[1].valueOf();
         yCoord = array[2].valueOf();
-        flag = array[3].valueOf();
-        
         console.log(_data);
-        var a = xCoord - elements[elementType.calibrationPoint].x;
-        var b = yCoord - elements[elementType.calibrationPoint].y;
-        var dist = Math.sqrt( a*a + b*b );
-        if(dist < calibrationOffset){
-          console.log("Successfully calibrated");
-          document.querySelector('#calibrateButton').textContent = 'Calibrated';
-          document.getElementById("calibrateButton").disabled = true;
-          document.getElementById("sourceButton").disabled = false;
-          elements[elementType.listener].id = id;
-          elements[elementType.listener].x = xCoord;
-          elements[elementType.listener].y = yCoord;
-          elements[elementType.listener].alpha = 1;
-          isCalibrated = true;
-          beforeInitCalibration = false;
-          currentlyCalibrating = false;
-          ws.send(id);
-          console.log("id " + id + " is in use!");
+        if(!currentlyCalibrating){
+          return;
+        }else{
+          var a = xCoord - elements[elementType.calibrationPoint].x;
+          var b = yCoord - elements[elementType.calibrationPoint].y;
+          var dist = Math.sqrt( a*a + b*b );
+          if(dist < calibrationOffset){
+            console.log("Successfully calibrated");
+            document.querySelector('#calibrateButton').textContent = 'Calibrated';
+            document.getElementById("calibrateButton").disabled = true;
+            document.getElementById("sourceButton").disabled = false;
+            elements[elementType.listener].id = id;
+            elements[elementType.listener].x = xCoord;
+            elements[elementType.listener].y = yCoord;
+            elements[elementType.listener].alpha = 1;
+            isCalibrated = true;
+            beforeInitCalibration = false;
+            currentlyCalibrating = false;
+          }
+          console.log(dist)
         }
-        console.log(dist)
       }
       catch{
         console.log("No data received")
@@ -115,17 +112,12 @@ let calibrationCoord = {
         id = array[0].valueOf();
         xCoord = array[1].valueOf();
         yCoord = array[2].valueOf();
-        flag = array[3].valueOf();
         if(id != -1){
           setList(id, xCoord, yCoord);
         }else{
           return;
         }
         if(id == elements[elementType.listener].id){
-          if(flag != 0){
-            console.log("received FLAG: " + flag);
-            elements[elementType.listener].id = flag;
-          }
           if(xCoord > 0 && id != -1){
             elements[elementType.listener].alpha = 1;
             elements[elementType.listener].x = xCoord;
@@ -177,13 +169,6 @@ function logArray(){
 function setList(id, x, y){
   for(var i = 0; i < 5; i++){
     if(listOfAllUsers[i].id == id){
-      if(x == -1){
-        console.log("deleting id " + id);
-        listOfAllUsers[i].id = -1;
-        listOfAllUsers[i].x = x;
-        listOfAllUsers[i].y = y;
-        return;
-      }
       console.log("test1, changing index " + i + "...id: " + id);
       listOfAllUsers[i].x = x;
       listOfAllUsers[i].y = y;
