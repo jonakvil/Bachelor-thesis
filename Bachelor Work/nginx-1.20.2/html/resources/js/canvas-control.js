@@ -52,7 +52,7 @@ function connect(that, _ws) {
   _ws.onclose = function(e) {
     console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
     setTimeout(function() {
-      connect();
+      connect(that, _ws);
     }, 1000);
   };
 

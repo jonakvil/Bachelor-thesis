@@ -17,6 +17,7 @@ let elementType = {
 
 let timeoutOffset = 5;
 let calibrationOffset = 0.2;
+let calibrationTime = -1;
 
 let timeoutStart;
 
@@ -62,13 +63,29 @@ let calibrationCoord = {
   };
 
 /**
+ * @private
+ */
+
+function checkTimeout(){
+  if(Date.now() - calibrationTime > 3000){
+    isCalibrated = false;
+    currentlyCalibrating = false;
+    document.querySelector('#calibrateButton').textContent = 'Calibrate';
+    document.getElementById("calibrateButton").disabled = false;
+    document.getElementById('infoText').textContent = "F... try again";
+    elements[elementType.listener].alpha = 0.2;
+  }
+}
+
+/**
  * @param {Object} _data
  * @param {Object} ws
  * @private
  */
  function updatePositions(_data, ws) {
-    //console.log(_data)
-    //logArray();
+    if(elements[elementType.listener].id != -1){
+    document.querySelector('#userId').textContent = 'Your ID is: ' + elements[elementType.listener].id;
+    }
 
     var id, xCoord, yCoord;
     if(!isCalibrated){
@@ -89,7 +106,7 @@ let calibrationCoord = {
         if(dist < calibrationOffset){
           console.log("Successfully calibrated");
           document.querySelector('#calibrateButton').textContent = 'Calibrated';
-          document.getElementById("calibrateButton").disabled = true;
+          document.getElementById("calibrateButton").disabled = false;
           document.getElementById("sourceButton").disabled = false;
           elements[elementType.listener].id = id;
           elements[elementType.listener].x = xCoord;
@@ -101,13 +118,13 @@ let calibrationCoord = {
           ws.send(id);
           console.log("id " + id + " is in use!");
         }
+        checkTimeout();
         console.log(dist)
       }
       catch{
         console.log("No data received")
       };
-
-
+      return;
     }else{
       if(_data != null){
         console.log(_data);
@@ -139,7 +156,6 @@ let calibrationCoord = {
               currentlyCalibrating = false;
               timeoutStart = new Date().getTime();
               elements[elementType.listener].id = -1;
-              document.getElementById("calibrateButton").disabled = false;
               elements[elementType.listener].alpha = 0.2;
               document.querySelector('#calibrateButton').textContent = 'Calibrate';
               document.getElementById('infoText').textContent = "You are not tracked..."
@@ -152,7 +168,7 @@ let calibrationCoord = {
     if (!audioReady){
       return;
     }
-    console.log("Changing COORDS of UI, id is " + elements[elementType.listener].id);
+    //console.log("Changing COORDS of UI, id is " + elements[elementType.listener].id);
     let x = (elements[elementType.listener].x - 0.5) * dimensions.width / 2;
     let y = 0;
     let z = (elements[elementType.listener].y - 0.5) * dimensions.depth / 2;
@@ -307,15 +323,18 @@ let onLoad = function() {
   };
 
   calibratePosition.onclick = function(event) {
-    if(isCalibrated || currentlyCalibrating){
-      return;
-    }
     document.querySelector('#calibrateButton').textContent = 'Calibrating';
     document.querySelector('#calibrateButton').disabled = true;
     elements[elementType.listener].alpha = 0.5;
     console.log("Calibrating")
     infoText.textContent = "Wait for the calibration to complete..."
+    calibrationTime = Date.now();
     currentlyCalibrating = true;
+    if(isCalibrated){
+      isCalibrated = false;
+      restoreId();
+    }
+
   };
 
   let canvas = document.getElementById('canvas');
@@ -352,6 +371,19 @@ let onLoad = function() {
   new CanvasControl(canvas, elements, updatePositions);
 };
 
+/**
+ * @private
+ */
+function restoreId(){
+  for(var i = 0; i < 5; i++){
+    if(listOfAllUsers[i].id == elements[elementType.listener].id){
+      listOfAllUsers[i].id = -1;
+      listOfAllUsers[i].x = -1;
+      listOfAllUsers[i].y = -1;
+    }
+  }
+  elements[elementType.listener].id = -1;
+}
 
 
 window.addEventListener('load', onLoad);
