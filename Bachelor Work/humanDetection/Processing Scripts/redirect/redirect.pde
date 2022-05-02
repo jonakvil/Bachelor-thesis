@@ -48,10 +48,12 @@ boolean doneSecond = false;
 boolean doneThird = false;
 void draw() {
 
-
   if (!doneFirst) {
     for (int k = 0; k < 1; k++) {
       for (int i = 1; i < 100; i++) {
+          checkTimeStamps();
+
+        
         OscMessage myMessage = new OscMessage("/some/address");
         myMessage.add(id1);
         myMessage.add((int)floor(640 - i*6.4));
@@ -73,6 +75,8 @@ void draw() {
   if (doneFirst && !doneSecond) {
     for (int k = 0; k < 1; k++) {
       for (int i = 1; i < 45; i++) {
+          checkTimeStamps();
+
         OscMessage myMessage = new OscMessage("/some/address");
         myMessage.add(id1);
         myMessage.add(10);
@@ -101,6 +105,8 @@ void draw() {
   if (doneSecond) {
     for (int k = 0; k < 2; k++) {
       for (int i = 1; i < 45; i++) {
+          checkTimeStamps();
+
         //OscMessage myMessage = new OscMessage("/some/address");
         //myMessage.add(id3);
         //myMessage.add(10);
@@ -170,6 +176,7 @@ void webSocketServerEvent(String msg) {
 public void resolveOscPacket(int id, int coordX, int coordY) {
   println();
   checkTimeStamps();
+  
   float xNorm = (float)coordX/frameWidth;
   float yNorm = (float)coordY/frameHeight;
   printVP();
