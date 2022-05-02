@@ -1,3 +1,5 @@
 
 .DS_Store
 Bachelor Work/.DS_Store
+Bachelor Work/nginx-1.20.2/logs/error.log
+Bachelor Work/nginx-1.20.2/logs/access.log

@@ -151,7 +151,7 @@ function checkTimeout(){
           }else{
             console.log("Received negative coords: " + xCoord + "/" + yCoord);
             console.log("Searching for nearby coords...")
-            if(!checkForSwitchedCoordinates()){
+            if(/*!checkForSwitchedCoordinates() || */ true){
               isCalibrated = false;
               currentlyCalibrating = false;
               timeoutStart = new Date().getTime();
