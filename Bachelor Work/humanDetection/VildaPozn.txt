@@ -16,6 +16,9 @@ tiny with video:
 python object_tracker_modified.py --weights ./checkpoints/yolov4-tiny-416 --video ./data/video/test.mp4 --output ./outputs/tiny_v2.avi --model yolov4 --tiny
 
 
+run old tiny with webcam:
+python object_tracker.py --weights ./checkpoints/yolov4-tiny-416 --video 0 --output ./outputs/tiny_webcam.avi --model yolov4 --tiny
+
 //---------------------------
 name: yolov4-gpu
 
