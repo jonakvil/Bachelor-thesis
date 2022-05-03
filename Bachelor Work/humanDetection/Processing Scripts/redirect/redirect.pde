@@ -29,6 +29,7 @@ ArrayList<DyingPerson> dyingPeople;
 boolean bundleFinished = false;
 
 void setup() {
+  frameRate(1000);
   /* start oscP5, listening for incoming messages at port 12000 */
   oscP5 = new OscP5(this, 1337);
   myRemoteLocation = new NetAddress("127.0.0.1", 1337);
@@ -37,131 +38,70 @@ void setup() {
   startTime = millis();
   idBundle = new ArrayList<>();
   dyingPeople = new ArrayList<>();
-
-  VirtualPerson vp = new VirtualPerson(2, 10/640, 240/460, millis());
-  vp.inUse = true;
-  idBundle.add(vp);
 }
 
 boolean doneFirst = false;
 boolean doneSecond = false;
 boolean doneThird = false;
+int i = 0;
+
 void draw() {
+  if (i < 639) {
 
-  if (!doneFirst) {
-    for (int k = 0; k < 1; k++) {
-      for (int i = 1; i < 100; i++) {
-          checkTimeStamps();
-
-        
-        OscMessage myMessage = new OscMessage("/some/address");
-        myMessage.add(id1);
-        myMessage.add((int)floor(640 - i*6.4));
-        myMessage.add((int)floor(240));
-        oscP5.send(myMessage, myRemoteLocation);
-
-        delay(50);
-
-        myMessage = new OscMessage("/some/address");
-        myMessage.add(id2);
-        myMessage.add(10);
-        myMessage.add(240);
-        oscP5.send(myMessage, myRemoteLocation);
-        delay(100);
-      }
-    }
-    doneFirst = true;
-  }
-  if (doneFirst && !doneSecond) {
-    for (int k = 0; k < 1; k++) {
-      for (int i = 1; i < 45; i++) {
-          checkTimeStamps();
-
-        OscMessage myMessage = new OscMessage("/some/address");
-        myMessage.add(id1);
-        myMessage.add(10);
-        myMessage.add(240);
-        oscP5.send(myMessage, myRemoteLocation);
-
-        myMessage = new OscMessage("/some/address");
-        myMessage.add(id3);
-        myMessage.add(10);
-        //myMessage.add((int)floor(225 + i*6.4));
-        myMessage.add(240);
-        oscP5.send(myMessage, myRemoteLocation);
-        delay(50);
-
-        myMessage = new OscMessage("/some/address");
-        myMessage.add(id2);
-        myMessage.add(10);
-        myMessage.add(240);
-        oscP5.send(myMessage, myRemoteLocation);
-        delay(100);
-      }
-    }
-    doneSecond = true;
-  }
-
-  if (doneSecond) {
-    for (int k = 0; k < 2; k++) {
-      for (int i = 1; i < 45; i++) {
-          checkTimeStamps();
-
-        //OscMessage myMessage = new OscMessage("/some/address");
-        //myMessage.add(id3);
-        //myMessage.add(10);
-        //myMessage.add((int)floor(225 + i*6.4));
-        //oscP5.send(myMessage, myRemoteLocation);
-        //delay(50);
-
-        //myMessage = new OscMessage("/some/address");
-        //myMessage.add(id2);
-        // myMessage.add(10);
-        //myMessage.add((int)floor(225 + i*6.4));
-        //oscP5.send(myMessage, myRemoteLocation);
-        //delay(50);
-
-        if (!doneThird) {
-          OscMessage newM = new OscMessage("/some/address");
-          newM.add(id1);
-          newM.add(10);
-          newM.add(240);
-          oscP5.send(newM, myRemoteLocation);
-          delay(50);
-
-          OscMessage myMessage = new OscMessage("/some/address");
-          myMessage.add(id2);
-          myMessage.add(630);
-          myMessage.add(240);
-          oscP5.send(myMessage, myRemoteLocation);
-        }
-        delay(100);
-      }
-    }
-    //OscMessage myMessage = new OscMessage("/some/address");
-    //myMessage.add(id1);
-    //myMessage.add(-640);
-    //myMessage.add(-480);
-    //oscP5.send(myMessage, myRemoteLocation);
-    doneThird = true;
+    OscMessage newM = new OscMessage("/some/address");
+    newM.add(id1);
+    newM.add(640-i);
+    newM.add(240);
+    oscP5.send(newM, myRemoteLocation);
+    i++;
+  } else {
+    i = 0;
   }
 }
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/some/address")==true) {
-    if (theOscMessage.checkTypetag("iii")) {
-
-
+    //if (theOscMessage.checkTypetag("iii")) {
+    //  int id = theOscMessage.get(0).intValue();
+    //  int coordX = theOscMessage.get(1).intValue();
+    //  int coordY = theOscMessage.get(2).intValue();
+    //  resolveOscPacket(id, coordX, coordY);
+    //  return;
+    //} else {
+    //  println("aha");
+    //}
+    String regex = ("\\[(.*?)\\]");
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(theOscMessage.typetag());
+    // Check all occurrences
+    ArrayList
+    while (matcher.find()) {
+      println("Start index: " + matcher.start());
       int id = theOscMessage.get(0).intValue();
       int coordX = theOscMessage.get(1).intValue();
       int coordY = theOscMessage.get(2).intValue();
       resolveOscPacket(id, coordX, coordY);
-      return;
-    } else {
-      println("aha");
+      
+      //System.out.print(" End index: " + matcher.end());
+      //System.out.println(" Found: " + matcher.group());
     }
+
+ /*   String[][] m = matchAll(theOscMessage.typetag(), "\\[(.*?)\\]");
+    if ( m != null) {
+      for (int i = 0; i < m.length; i++) {
+        println("Found '" + m[i][1] + "' inside a tag." + m.start() );
+      }
+    }
+*/
+
+    //int blobNum = theOscMessage.typetag().length() / 3;
+    //println(test);
+    //return;
   }
-  println("### received an osc message. with address pattern "+theOscMessage.addrPattern() + " " + theOscMessage.typetag());
+  //println("### received an osc message. with address pattern "+theOscMessage.addrPattern() + " " + theOscMessage.typetag());
 }
 
 void webSocketServerEvent(String msg) {
@@ -173,10 +113,10 @@ void webSocketServerEvent(String msg) {
   }
 }
 //0 for first track, 1 for other track
-public void resolveOscPacket(int id, int coordX, int coordY) {
+public string resolveOscPacket(int id, int coordX, int coordY) {
   println();
   checkTimeStamps();
-  
+
   float xNorm = (float)coordX/frameWidth;
   float yNorm = (float)coordY/frameHeight;
   printVP();
@@ -199,7 +139,7 @@ public void resolveOscPacket(int id, int coordX, int coordY) {
       dyingPeople.remove(dp);
       println("removed id " + id);
       wsc.sendMessage(id + "/" + -1 + "/" + -1 + "/" + 0);
-      return;
+      return(id.ToString() + "/" + -1 + "/" + -1 + "/" + 0);
     } else if (dp.getId() == id) {
       dp.timeStamp = millis();
       return;
@@ -228,9 +168,6 @@ public void resolveOscPacket(int id, int coordX, int coordY) {
   } else {
     //POKUD JE NEKDO MIMO KALIBRACNI ZONU
     for (VirtualPerson vp : idBundle) {
-      if (id == 2) {
-        vp.inUse = true;
-      }
       if (vp.getId() == id) {
         if (vp.inUse) {
           vp.x = xNorm;
@@ -253,11 +190,13 @@ public void checkNearby(int id, float x, float y) {
   println(" - - - CHECKING - - - ");
   int counter = 0;
   int vpId = -1;
+  ArrayList<Integer> xxx = new ArrayList<Integer>();
 
   for (VirtualPerson vp : idBundle) {
     println("checking dist");
     if (dist(x, y, vp.x, vp.y) < calibOffset) {
       counter++;
+      xxx.add(vp.id);
       vpId = vp.id;
     }
   }
@@ -275,6 +214,20 @@ public void checkNearby(int id, float x, float y) {
       }
     }
   }
+
+  //float distance = 1000;
+  //int finalId = -1;
+  //if(counter > 1){
+  //  for(VirtualPerson vp : idBundle){
+  //   if(xxx.contains(vp.id)){
+  //     if(dist(vp.x, vp.y, x, y) < distance){
+  //      distance = dist(vp.x, vp.y, x, y);
+  //      finalId = vp.id;
+  //     }
+  //   }
+
+  //  }
+  //}
 }
 
 public void checkTimeStamps() {

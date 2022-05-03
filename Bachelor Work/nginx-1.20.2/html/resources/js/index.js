@@ -16,7 +16,7 @@ let elementType = {
 }
 
 let timeoutOffset = 5;
-let calibrationOffset = 0.2;
+let calibrationOffset = 0.5;
 let calibrationTime = -1;
 
 let timeoutStart;
@@ -67,6 +67,7 @@ let calibrationCoord = {
  */
 
 function checkTimeout(){
+  console.log("Time delta: " + Date.now() - calibrationTime);
   if(Date.now() - calibrationTime > 3000){
     isCalibrated = false;
     currentlyCalibrating = false;
@@ -84,8 +85,9 @@ function checkTimeout(){
  */
  function updatePositions(_data, ws) {
     if(elements[elementType.listener].id != -1){
-    document.querySelector('#userId').textContent = 'Your ID is: ' + elements[elementType.listener].id;
+      document.querySelector('#userId').textContent = 'Your ID is: ' + elements[elementType.listener].id;
     }
+    console.log("PRINT");
 
     var id, xCoord, yCoord;
     if(!isCalibrated){
@@ -98,8 +100,6 @@ function checkTimeout(){
         xCoord = array[1].valueOf();
         yCoord = array[2].valueOf();
         flag = array[3].valueOf();
-        
-        console.log(_data);
         var a = xCoord - elements[elementType.calibrationPoint].x;
         var b = yCoord - elements[elementType.calibrationPoint].y;
         var dist = Math.sqrt( a*a + b*b );
@@ -143,7 +143,7 @@ function checkTimeout(){
             console.log("received FLAG: " + flag);
             elements[elementType.listener].id = flag;
           }
-          if(xCoord > 0 && id != -1){
+          if(xCoord != -1 && id != -1){
             elements[elementType.listener].alpha = 1;
             elements[elementType.listener].x = xCoord;
             elements[elementType.listener].y = yCoord;
@@ -330,9 +330,23 @@ let onLoad = function() {
     infoText.textContent = "Wait for the calibration to complete..."
     calibrationTime = Date.now();
     currentlyCalibrating = true;
+    setTimeout(checkCalibTimeOut, 3000);
     if(isCalibrated){
+      console.log("fuck")
       isCalibrated = false;
       restoreId();
+    }
+
+    function checkCalibTimeOut(){
+      if(!isCalibrated){
+        currentlyCalibrating = false;
+        document.querySelector('#calibrateButton').textContent = 'Calibrate';
+        document.querySelector('#calibrateButton').disabled = false;
+        elements[elementType.listener].alpha = 0.2;
+        infoText.textContent = "Click for calibration";
+
+      }
+
     }
 
   };

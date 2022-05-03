@@ -30,7 +30,7 @@ function CanvasControl(canvas, elements, callbackFunc) {
     that.draw();
   }, false);
 
-  let ws = new WebSocket('ws://localhost:8080');
+  let ws = new WebSocket('ws://192.168.23.154:8080');
   connect(this, ws);
 
   this.resize();
@@ -45,21 +45,27 @@ function connect(that, _ws) {
   };
 
   _ws.onmessage = function(e) {
-    that._data = e.data;
+    console.log(e.data);
     that.invokeCallback(_ws);
+    that._data = e.data;
   };
 
   _ws.onclose = function(e) {
     console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-    setTimeout(function() {
-      connect(that, _ws);
-    }, 1000);
+    //_ws.close();
+    //_ws = new WebSocket('ws://192.168.23.154:8080');
+    setTimeout(reconnect(_ws, that) , 1000);
   };
 
   _ws.onerror = function(err) {
     console.error('Socket encountered error: ', err.message, 'Closing socket');
     _ws.close();
   };
+}
+
+function reconnect(that, ws){
+  console.log("reconnect");
+  connect(that, ws);
 }
 
 CanvasControl.prototype.invokeCallback = function(_ws) {

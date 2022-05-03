@@ -319,6 +319,7 @@ def main(_argv):
 
                 #centre = int(upperRight[0]/2 + bbox[0]/2) , (int(upperRight[1]/2 + bbox[1]/2))
                 centre = int(bottomLeft[0]/2 + bbox[2]/2) , (int(bottomLeft[1]/2 + bbox[3]/2) - 135)
+                oscMessage = []
 
 
                 isNew = True
@@ -329,7 +330,8 @@ def main(_argv):
                         person.last_seen = time.process_time()
                         isNew = False
                         cv2.putText(frame, class_name + "-" + str(track.track_id) + " - " + str(person.coord[0]) + " " + str(person.coord[1]), (int(bbox[0]), int(bbox[1]-10)),0, 0.75, (255,255,255),2)
-                        client.send_message("/some/address", [track.track_id, centre[0], centre[1]])
+                        oscMessage.add([track.track_id, centre[0], centre[1]])
+                        #client.send_message("/some/address", [track.track_id, centre[0], centre[1]])
                     #cv2.circle(frame, person.coord, 10, color, FILLED)
                 if isNew:
                     p = Person(track.track_id, centre, time.process_time())
@@ -339,19 +341,19 @@ def main(_argv):
             for person in listOfUsers:
                 if(time.process_time() - person.last_seen > timeOffset):
                     listOfUsers.remove(person)
-                    client.send_message("/some/address", [person.id_num, -1, -1])
+                    oscMessage.add([person.id_num, -1, -1])
+                    #client.send_message("/some/address", [person.id_num, -1, -1])
                 else:
                     colorB = colors[int(person.id_num) % len(colors)]
                     colorB = [i * 255 for i in colorB]
                     cv2.circle(frame, person.coord, 10, colorB, FILLED)
 
                 #print("ID: " + str(person.id_num) + ", time: " + str(person.last_seen))
-        
-                    
-
             # if enable info flag then print details about each track
                 if FLAGS.info:
                     print("Tracker ID: {}, Class: {},  BBox Coords (xmin, ymin, xmax, ymax): {}".format(str(track.track_id), class_name, (int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3]))))
+            
+            client.send_message("/some/address", [track.track_id, centre[0], centre[1]])
 
 
             # calculate frames per second of running detections
